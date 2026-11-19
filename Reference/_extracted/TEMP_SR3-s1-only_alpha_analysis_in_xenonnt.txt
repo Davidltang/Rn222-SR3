@@ -1,0 +1,112 @@
+--- Page 1 ---
+2026/05/17 15:49 1/12 S1-only alpha analysis in XENONnT
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/S1-only alpha analysis in XENONnT
+Author: Olga Razuvaev
+Created: Apr.14th 2026
+WORK IN PROGRESS!
+In this note, an S1-only analysis of the beginning of SR3 is described. The main reference is
+https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:analysis:dominick:xenonnt_s1-only_radon_se
+lection . For this analysis, peaklets were used. The main goal of this analysis is to select the peaks
+corresponding to alpha decays, which are shown in the diagram.
+Data selection
+Runs
+078451-079371  (to be updated)
+Run modes: tpc_bkg
+Excluded tags: abandon , messy
+Included tags: s1-only
+Excluded run numbers (issues when loading data): 078926 , 079200 , 079205  (to be updated)
+Pre-selection.
+Quality cut: (0 < AFT < 0.999) & (tight_coincidence > 3)
+Selection (1e2 < Area) & (60 < Width < 200)
+--- Page 2 ---
+Last update:
+2026/04/28 15:55olgarazuvaev:s1_only_alpha_analysis https://xe1t-wiki.lngs.infn.it/doku.php?id=olgarazuvaev:s1_only_alpha_analysis
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/05/17 15:49
+Area correction (dependence on Z-coordinate -- step 1)
+The area of the signal depends on the Z-coordinate of S1. Since we do not have S2 signals, direct
+depth measurement is not possible. Therefore, we use the dependence on AFT for the same purpose.
+This and all subsequent corrections are derived according to the following procedure:
+where  is the parameter being corrected, and  is the parameter on which  depends.  is the
+correction function derived from the ﬁt. For the ﬁt, one of the well-selected peaks is chosen.
+Fig. 1: S1 area vs. S1 AFT Fig. 2: S1 area vs. S1 AFT (after the correction)
+
+--- Page 3 ---
+2026/05/17 15:49 3/12 S1-only alpha analysis in XENONnT
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/
+Area correction (radial dependence -- step 2)
+Determining the exact S1-peaklet position in the XY plane is also quite diﬃcult, but for this analysis,
+simple weighted coordinates can be used. The peaklet coordinates are calculated as follows:
+where ( ,) represent the coordinates of the i-th PMT’s axis, and  is the measured area of the
+peaklet from this PMT.
+The radius determined in this way still needs a correction (as shown in ﬁgure 4), because it depends
+on the Z-coordinate (and hence on AFT). To correct this dependence, the data from a well-selected
+--- Page 4 ---
+Last update:
+2026/04/28 15:55olgarazuvaev:s1_only_alpha_analysis https://xe1t-wiki.lngs.infn.it/doku.php?id=olgarazuvaev:s1_only_alpha_analysis
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/05/17 15:49peak (selection is shown in Fig. 3) were ﬁtted with a polynomial function (see ﬁgure 4). After that, the
+dependence of the S1 area (after step 1) on the corrected radius is also corrected.
+Fig. 3: S1 area vs. S1 AFT Fig. 4: Weighted radius squared vs. AFT
+
+--- Page 5 ---
+2026/05/17 15:49 5/12 S1-only alpha analysis in XENONnT
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/Fig. 5: Event selection for the
+radial correctionFig. 6: Radial correction
+of the areaFig. 7: Area vs weighted R
+after the correction
+As can be seen in Fig. 8, the peaks on the area spectrum changed their shapes after this correction,
+but they are still not Gaussian:( The green histogram indicates the area spectrum obtained in the
+previous step.
+--- Page 6 ---
+Last update:
+2026/04/28 15:55olgarazuvaev:s1_only_alpha_analysis https://xe1t-wiki.lngs.infn.it/doku.php?id=olgarazuvaev:s1_only_alpha_analysis
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/05/17 15:49Fig. 8:
+Selection of the peaks and calculation the rates
+After applying an additional weighted radius cut (as shown in ﬁgure 9), the peaks become very clearly
+visible. The positions of the alpha-lines (which correspond to the alpha decays shown in the diagram
+at the beginning of the note) are shown with the dotted lines. The position of the radon-222 line
+corresponds to the position of the ﬁrst peak. Subsequent peaks shift to the right as the light yield (LY)
+--- Page 7 ---
+2026/05/17 15:49 7/12 S1-only alpha analysis in XENONnT
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/increases with energy ( https://nest.physics.ucdavis.edu/benchmark-plots ).
+Fig. 9: AFT and weighted radius
+cutsFig. 10: Corrected area spectrum after applying AFT
+and radius cuts
+
+--- Page 8 ---
+Last update:
+2026/04/28 15:55olgarazuvaev:s1_only_alpha_analysis https://xe1t-wiki.lngs.infn.it/doku.php?id=olgarazuvaev:s1_only_alpha_analysis
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/05/17 15:49
+Using the dependence of the drift time on AFT, one can easily calculate the ﬁducial mass. Since we
+don't have this dependence for SR3 yet, we can use previous calculations as an estimate. The
+corresponding dependence for SR0 is presented in Fig. 11. The ﬁducial mass is equal to 3.66 T.
+Fig. 11: Drift time vs. S1 AFT (by Florian
+Joerg) ( FOR SR0 )Fig. 10: AFT vs corrected R  for SR0 (left) and
+for SR3(right)
+--- Page 9 ---
+2026/05/17 15:49 9/12 S1-only alpha analysis in XENONnT
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/
+
+--- Page 10 ---
+Last update:
+2026/04/28 15:55olgarazuvaev:s1_only_alpha_analysis https://xe1t-wiki.lngs.infn.it/doku.php?id=olgarazuvaev:s1_only_alpha_analysis
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/05/17 15:49
+To calculate the rates, the peaks were selected as shown in ﬁgure 11 (only AFT cut was applied).
+The rates in Bq/kg are calculated as  and are presented below.
+Fig. 12: Peak selection for the rate calculation
+--- Page 11 ---
+2026/05/17 15:49 11/12 S1-only alpha analysis in XENONnT
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/
+Fig. 13: Rates
+Reasons why values ​​may be slightly (or not) changed
+The obtained value (2.1  for Rn222) is quite low in comparison with previous runs and
+expectations. Here are the possible reasons, why this value is not ﬁnal, and why it will be adjusted.
+value of the ﬁducial mass
+corrections and peak selection
+--- Page 12 ---
+Last update:
+2026/04/28 15:55olgarazuvaev:s1_only_alpha_analysis https://xe1t-wiki.lngs.infn.it/doku.php?id=olgarazuvaev:s1_only_alpha_analysis
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/05/17 15:49From:
+https://xe1t-wiki.lngs.infn.it/  - XENON1TWiki
+Permanent link:
+https://xe1t-wiki.lngs.infn.it/doku.php?id=olgarazuvaev:s1_only_alpha_analysis
+Last update: 2026/04/28 15:55

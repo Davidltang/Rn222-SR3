@@ -1,0 +1,325 @@
+# ═══════════════════════════════════════════════════════════════
+# RUN-BY-RUN FIT + RATE — ALL 5 ISOTOPES (per-run multi-Gaussian)
+# ═══════════════════════════════════════════════════════════════
+# Instead of using the global before/after fit for all runs,
+# fit each run individually to catch spectrum shifts.
+# Falls back to global fit if per-run fit fails (low stats).
+
+# ── Get run list ──
+import cutax
+import strax
+import straxen
+
+st = straxen.contexts.xenonnt_online(
+    output_folder='/scratch/midway3/jietang/strax_data'
+)
+st.storage.append(
+    strax.DataDirectory('/project/lgrandi-shared/commissioning/', readonly=True)
+)
+
+runs_sr3 = st.select_runs(
+    run_mode='tpc_bkg',
+    exclude_tags=['abandon', 'messy', 'timing_issue'],
+    include_tags=['s1_only'],
+    available=('peak_basics'),
+)
+
+print(f'Loaded {len(runs_sr3)} runs')
+
+# ── Select runs after MIN_RUN_DATE ──
+MIN_RUN_DATE = '2026-05-01'
+min_run_s = pd.Timestamp(MIN_RUN_DATE, tz='UTC').timestamp()
+runs_sr3['start_s'] = runs_sr3['start'].apply(lambda x: x.timestamp())
+runs_sr3 = runs_sr3[runs_sr3['start_s'] >= min_run_s].copy()
+print(f'After filtering runs >= {MIN_RUN_DATE}: {len(runs_sr3)} runs')
+
+# ── Parameters ──
+N_SIGMA_RUN = 2
+FMASS = 3660.0  # kg
+cutoff_s = np.datetime64(CUTOFF_DATE).astype('datetime64[s]').astype('int64')
+
+# ── Per-run fitting function ──
+def fit_run_spectrum(events, guess_mu, fit_min, label=''):
+    """Fit multi-Gaussian to a single run's spectrum.
+
+    Returns (p_fit, ok, status).
+    status: 'success_tight', 'success_medium', 'success_wide',
+            'fallback_global', 'too_few_events', 'fit_failed'
+    """
+    n_ev = len(events)
+    if n_ev < 50:
+        return None, False, f'too_few_events({n_ev})'
+
+    # Adaptive binning — fewer bins for low-stat runs
+    n_bins = min(300, max(80, n_ev // 5))
+
+    counts, edges = np.histogram(
+        events['area_2_corrected'], bins=n_bins, range=[45e3, 80e3]
+    )
+    centers = 0.5 * (edges[:-1] + edges[1:])
+
+    mask_fit = (centers >= fit_min) & (centers <= 80e3)
+    x_fit = centers[mask_fit]
+    y_fit = counts[mask_fit]
+    y_err = np.sqrt(np.maximum(y_fit, 1))
+
+    # Try progressively wider mu bounds
+    for width, tag in [(400, 'tight'), (700, 'medium'), (1200, 'wide')]:
+        p0 = []
+        bounds_lower = []
+        bounds_upper = []
+        for mu0 in guess_mu:
+            idx = np.argmin(np.abs(x_fit - mu0))
+            amp0 = max(y_fit[idx] * 0.4, 3)
+            p0.extend([amp0, mu0, GUESS_SIGMA])
+            bounds_lower.extend([0, mu0 - width, 100])
+            bounds_upper.extend([np.inf, mu0 + width, 3500])
+        p0.append(1.0)           # background initial
+        bounds_lower.append(0)
+        bounds_upper.append(np.inf)
+
+        try:
+            p_fit, p_cov = curve_fit(
+                multi_gaussian, x_fit, y_fit, p0=p0, sigma=y_err,
+                bounds=(bounds_lower, bounds_upper), maxfev=30000
+            )
+            # Sanity checks — reject if any mu hit the bound or sigma is crazy
+            ok_sane = True
+            for i in range(N_PEAKS):
+                mu_f  = p_fit[3*i + 1]
+                sig_f = p_fit[3*i + 2]
+                if abs(mu_f - guess_mu[i]) > width * 0.95:
+                    ok_sane = False
+                if sig_f < 50 or sig_f > 4000:
+                    ok_sane = False
+            if ok_sane:
+                return p_fit, True, f'success_{tag}'
+        except Exception:
+            continue
+
+    return None, False, 'fit_failed'
+
+
+# ── Main loop: per-run fit + counting ──
+results_run = []
+fit_stats = {'success_tight': 0, 'success_medium': 0, 'success_wide': 0,
+             'fallback_global': 0, 'too_few_events': 0, 'fit_failed': 0}
+overlap_runs = []  # runs where Po-218/Rn-220 ±2σ windows overlap
+
+n_total = len(runs_sr3)
+for idx, (_, run) in enumerate(runs_sr3.iterrows()):
+    run_name   = run['name']
+    run_start  = run['start_s']
+    run_end    = float(run['end'].timestamp())
+    livetime_s = run.get('duration', run_end - run_start)
+
+    # ── Event selection ──
+    t0_ns = int(run_start * 1e9)
+    t1_ns = int(run_end   * 1e9)
+    mask_run = (rn_events['time'] >= t0_ns) & (rn_events['time'] < t1_ns)
+    events_run = rn_events[mask_run]
+
+    # ── Determine period + initial guesses ──
+    if run_start < cutoff_s:
+        guess_mu = GUESS_MU_BEFORE
+        fit_min  = 50000
+        p_global = p_before
+        period   = 'before'
+    else:
+        guess_mu = GUESS_MU_AFTER
+        fit_min  = 48000
+        p_global = p_after
+        period   = 'after'
+
+    # ── Per-run fit (with fallback to global) ──
+    p_fit, ok_fit, status = fit_run_spectrum(
+        events_run, guess_mu, fit_min, label=run_name
+    )
+
+    if not ok_fit:
+        # Fall back to global fit
+        if p_global is not None:
+            p_fit = p_global
+            status = 'fallback_global'
+        else:
+            # No global fit either — skip this run
+            continue
+
+    fit_stats[status] = fit_stats.get(status, 0) + 1
+
+    # ── Overlap check: Po-218 (idx 1) vs Rn-220 (idx 2) ──
+    mu_po218  = p_fit[3*1 + 1]
+    sig_po218 = p_fit[3*1 + 2]
+    mu_rn220  = p_fit[3*2 + 1]
+    sig_rn220 = p_fit[3*2 + 2]
+
+    overlap_po218_rn220 = (mu_po218 + N_SIGMA_RUN * sig_po218) > (mu_rn220 - N_SIGMA_RUN * sig_rn220)
+    if overlap_po218_rn220:
+        overlap_runs.append(run_name)
+
+    # ── Count events for each isotope ──
+    for i, name in enumerate(PEAK_NAMES):
+        mu  = p_fit[3*i + 1]
+        sig = p_fit[3*i + 2]
+        lo = mu - N_SIGMA_RUN * sig
+        hi = mu + N_SIGMA_RUN * sig
+
+        mask_iso = ((events_run['area_2_corrected'] >= lo) &
+                    (events_run['area_2_corrected'] <= hi))
+        n = mask_iso.sum()
+
+        rate     = n / livetime_s * 1e6 / FMASS          # μBq/kg
+        rate_err = np.sqrt(max(n, 1)) / livetime_s * 1e6 / FMASS
+
+        results_run.append({
+            'run':           run_name,
+            'start_s':       run_start,
+            'end_s':         run_end,
+            'livetime_s':    livetime_s,
+            'isotope':       name,
+            'n_events':      n,
+            'rate_ukgb':     rate,
+            'rate_err_ukgb': rate_err,
+            'period':        period,
+            'fit_status':    status,
+            'fit_mu':        mu,
+            'fit_sigma':     sig,
+            'overlap_warn':  (name in ['Po-218', 'Rn-220']) and overlap_po218_rn220,
+        })
+
+    # Progress
+    if (idx + 1) % 20 == 0 or idx == 0:
+        print(f'  [{idx+1}/{n_total}] {run_name}  {len(events_run)} evts  '
+              f'fit: {status}  Po-218/Rn-220 overlap: {overlap_po218_rn220}')
+
+df_rates = pd.DataFrame(results_run)
+
+# ── Fit status summary ──
+print(f'\n{"="*60}')
+print(f'  PER-RUN FIT STATUS')
+print(f'{"="*60}')
+for k, v in fit_stats.items():
+    if v > 0:
+        print(f'  {k:20s}: {v:4d} runs')
+print(f'{"="*60}')
+
+# ── Overlap report ──
+print(f'\n{"="*60}')
+print(f'  Po-218 / Rn-220 ±{N_SIGMA_RUN}σ OVERLAP CHECK')
+print(f'{"="*60}')
+if overlap_runs:
+    print(f'  ⚠ OVERLAPPING in {len(overlap_runs)}/{n_total} runs — '
+          f'events may be double-counted!')
+    print(f'  Run list: {", ".join(overlap_runs[:20])}')
+    if len(overlap_runs) > 20:
+        print(f'  ... and {len(overlap_runs) - 20} more')
+else:
+    print(f'  ✓ No overlap detected — all runs OK')
+print(f'{"="*60}')
+
+# ── Save ──
+outpath = '/project2/lgrandi/jietang/sr3_commissioning/sr3_s1only_rn_rates_0707.csv'
+
+df_rates.to_csv(outpath, index=False)
+print(f'\nSaved {len(df_rates)} rows ({len(runs_sr3)} runs × {N_PEAKS} isotopes) → {outpath}')
+
+# ── 5-panel plot, one per isotope ──
+from datetime import datetime, timezone
+
+fig, axes = plt.subplots(N_PEAKS, 1, figsize=(18, 2.5 * N_PEAKS), sharex=True)
+
+for ax, name in zip(axes, PEAK_NAMES):
+    df_iso = df_rates[df_rates['isotope'] == name]
+
+    mask_b = df_iso['period'] == 'before'
+    mask_a = df_iso['period'] == 'after'
+
+    start_dt = [datetime.fromtimestamp(s, tz=timezone.utc) for s in df_iso['start_s']]
+
+    # Points with per-run fit (circle) vs fallback (cross)
+    mask_fit_ok = df_iso['fit_status'].str.startswith('success')
+    mask_fb     = ~mask_fit_ok
+
+    # After — per-run fit OK
+    nz = mask_a & mask_fit_ok & (df_iso['rate_ukgb'] > 0)
+    if nz.sum() > 0:
+        ax.errorbar(np.array(start_dt)[nz], df_iso.loc[nz, 'rate_ukgb'].values,
+                    yerr=df_iso.loc[nz, 'rate_err_ukgb'].values,
+                    fmt='o', color='darkorange', markersize=3.5, capsize=1.5, lw=0.3,
+                    label=f'After {CUTOFF_DATE} (fit ok)')
+    # After — fallback
+    nz_fb = mask_a & mask_fb & (df_iso['rate_ukgb'] > 0)
+    if nz_fb.sum() > 0:
+        ax.errorbar(np.array(start_dt)[nz_fb], df_iso.loc[nz_fb, 'rate_ukgb'].values,
+                    yerr=df_iso.loc[nz_fb, 'rate_err_ukgb'].values,
+                    fmt='x', color='darkorange', markersize=4, capsize=1.5, lw=0.3, alpha=0.5)
+
+    # Before — per-run fit OK
+    nz = mask_b & mask_fit_ok & (df_iso['rate_ukgb'] > 0)
+    if nz.sum() > 0:
+        ax.errorbar(np.array(start_dt)[nz], df_iso.loc[nz, 'rate_ukgb'].values,
+                    yerr=df_iso.loc[nz, 'rate_err_ukgb'].values,
+                    fmt='o', color='steelblue', markersize=3.5, capsize=1.5, lw=0.3,
+                    label=f'Before {CUTOFF_DATE} (fit ok)')
+    # Before — fallback
+    nz_fb = mask_b & mask_fb & (df_iso['rate_ukgb'] > 0)
+    if nz_fb.sum() > 0:
+        ax.errorbar(np.array(start_dt)[nz_fb], df_iso.loc[nz_fb, 'rate_ukgb'].values,
+                    yerr=df_iso.loc[nz_fb, 'rate_err_ukgb'].values,
+                    fmt='x', color='steelblue', markersize=4, capsize=1.5, lw=0.3, alpha=0.5)
+
+    # Mean lines
+    all_b = mask_b & (df_iso['rate_ukgb'] > 0)
+    all_a = mask_a & (df_iso['rate_ukgb'] > 0)
+    if all_b.sum() > 0:
+        mb = df_iso.loc[all_b, 'rate_ukgb'].mean()
+        ax.axhline(y=mb, color='steelblue', ls='--', lw=1.2, alpha=0.6,
+                   label=f'Mean before: {mb:.1f} μBq/kg')
+    if all_a.sum() > 0:
+        ma = df_iso.loc[all_a, 'rate_ukgb'].mean()
+        ax.axhline(y=ma, color='darkorange', ls='--', lw=1.2, alpha=0.6,
+                   label=f'Mean after: {ma:.1f} μBq/kg')
+
+    # Overlap warning annotation on Po-218 and Rn-220 panels
+    if name in ['Po-218', 'Rn-220'] and overlap_runs:
+        ax.text(0.98, 0.92, f'⚠ Overlap in {len(overlap_runs)} runs',
+                transform=ax.transAxes, fontsize=7, color='red',
+                ha='right', va='top', fontweight='bold',
+                bbox=dict(boxstyle='round,pad=0.3', facecolor='yellow', alpha=0.3))
+
+    # Cutoff line
+    cutoff_dt = datetime.fromtimestamp(cutoff_s, tz=timezone.utc)
+    ax.axvline(x=cutoff_dt, color='black', ls='-', lw=1, alpha=0.3)
+
+    ax.set_ylabel(f'{name}\n[μBq/kg]', fontsize=9)
+    ax.legend(fontsize=6.5, loc='upper right', ncol=2)
+    ax.grid(True, alpha=0.25)
+
+import matplotlib.dates as mdates
+axes[-1].xaxis.set_major_formatter(mdates.DateFormatter('%m/%d', tz=timezone.utc))
+axes[-1].xaxis.set_major_locator(mdates.AutoDateLocator())
+axes[-1].set_xlabel('Run Start Time (UTC)', fontsize=11)
+fig.autofmt_xdate(rotation=0, ha='center')
+fig.suptitle(f'Run-by-Run Rates with Per-Run Fit  (±{N_SIGMA_RUN}σ, runs ≥ {MIN_RUN_DATE})',
+             fontsize=14, fontweight='bold')
+safe_tight(fig)
+plt.show()
+
+# ── Summary ──
+print(f'\n{"="*80}')
+print(f'  RUN-BY-RUN RATE SUMMARY  (±{N_SIGMA_RUN}σ, {len(runs_sr3)} runs ≥ {MIN_RUN_DATE})')
+print(f'{"="*80}')
+print(f'{"Isotope":10s}  {"Period":7s}  {"Runs":>5s}  {"Events":>8s}  {"Livetime":>10s}  {"Mean":>10s}  {"Std":>10s}')
+print(f'{"-"*80}')
+for name in PEAK_NAMES:
+    df_iso = df_rates[df_rates['isotope'] == name]
+    for period in ['before', 'after']:
+        df_p = df_iso[df_iso['period'] == period]
+        if len(df_p) == 0:
+            continue
+        total_ev = df_p['n_events'].sum()
+        total_lt = df_p['livetime_s'].sum()
+        print(f'  {name:10s}  {period:7s}  {len(df_p):5d}  {total_ev:8,}  '
+              f'{total_lt/86400:8.1f} d  '
+              f'{df_p["rate_ukgb"].mean():8.1f}  {df_p["rate_ukgb"].std():8.1f}  μBq/kg')
+print(f'{"="*80}')

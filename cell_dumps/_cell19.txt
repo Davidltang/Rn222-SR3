@@ -1,0 +1,56 @@
+# ═══════════════════════════════════════════════════════════════
+# CORRECTION 1b: Apply AFT Correction to FULL dataset
+# ═══════════════════════════════════════════════════════════════
+# Uses the REFINED centerline from Correction 1a.
+# Applied to ALL of d_cor (not just the fit region).
+
+area_ref = exp_bump_model(aft_ref, *p_opt_rn)
+
+print(f'Reference AFT: {aft_ref}')
+print(f'Reference area (Rn centerline at AFT={aft_ref}): {area_ref:.0f} PE')
+
+# Apply correction to full d_cor
+d_cor['area_aft_corrected'] = (
+    d_cor['area']
+    * area_ref
+    / exp_bump_model(d_cor['area_fraction_top'], *p_opt_rn)
+)
+
+print(f'AFT correction applied to {len(d_cor):,} events (full dataset)')
+
+# ── Before/After plot (shown in fit region for visibility) ──
+fig, axes = plt.subplots(1, 2, figsize=(18, 6))
+
+mask_plot = (
+    (d_cor['area_fraction_top'] >= 0.10) & (d_cor['area_fraction_top'] <= 0.60)
+)
+d_plot = d_cor.loc[mask_plot]
+
+ax = axes[0]
+h = ax.hist2d(d_plot['area'], d_plot['area_fraction_top'],
+              bins=[300, 300], range=[[20e3, 100e3], [0.1, 0.6]],
+              cmin=1, norm=matplotlib.colors.LogNorm())
+plt.colorbar(h[3], ax=ax, label='Counts')
+ax.plot(exp_bump_model(aft_fine, *p_opt_rn), aft_fine,
+        '-', color='yellow', lw=2, label='Rn centerline')
+ax.set_xlabel('Area [PE]', fontsize=12)
+ax.set_ylabel('Area Fraction Top', fontsize=12)
+ax.set_title('BEFORE AFT Correction', fontsize=13)
+ax.legend(fontsize=10)
+ax.grid(True, alpha=0.2)
+
+ax = axes[1]
+h = ax.hist2d(d_plot['area_aft_corrected'], d_plot['area_fraction_top'],
+              bins=[300, 300], range=[[20e3, 100e3], [0.1, 0.6]],
+              cmin=1, norm=matplotlib.colors.LogNorm())
+plt.colorbar(h[3], ax=ax, label='Counts')
+ax.axvline(x=area_ref, color='yellow', lw=2, ls='-',
+           label=f'Ref area = {area_ref:.0f} PE')
+ax.set_xlabel('AFT-Corrected Area [PE]', fontsize=12)
+ax.set_ylabel('Area Fraction Top', fontsize=12)
+ax.set_title('AFTER AFT Correction', fontsize=13)
+ax.legend(fontsize=10)
+ax.grid(True, alpha=0.2)
+
+safe_tight(fig)
+plt.show()

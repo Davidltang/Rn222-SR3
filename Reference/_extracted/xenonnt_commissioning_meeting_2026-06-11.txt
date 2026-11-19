@@ -1,0 +1,184 @@
+--- Page 1 ---
+2026/07/25 20:06 1/9 XENONnT commissioning meeting– 2026-06-11
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/XENONnT commissioning meeting–
+2026-06-11
+Zoom
+Agenda
+1. News from Operations Manager + Run Coordinator (Petr, Ekaterina)
+CRYO/PUR: Stable operation
+LXe PUR:
+Q5 ﬁlter status:Vessel was ﬁlled with new material and regenerated
+St707 ﬁlter was warmed up and swapped with regenerated Q5. Now Q5 leak check is
+ongoing.
+TPC:
+PMTs status: HV scan scheduled on Monday June 15;
+Electrodes status: Top stack voltage diﬀerence of +8.0 kV was successfully achieved
+(Anode + 4.25 kV; Gate -3.75 kV). TPC operated stably overnight with the Cathode at
+-12.0 kV.
+DAQ:
+Data are taking stably: data taking stability was checked with the Th source (2 kBq). It is
+stable now.
+New VME crate power supply updates: delivered to LNGS on Monday June 8. First
+installation was unsuccessful. Mechanical inspection for one of the VME crate threaded
+holes is required. Next trial is scheduled for Monday June 15.
+muVeto/nVeto:
+PMTs: Operating stably;
+GSO loading: Gd salt loading completed (350 kg). GdSO concentration is now uniform
+inside the WT, at about 530 ppm (as in SR2).
+DST/RAD:
+Status of the DST: Preparing to start online Kr distillation asap;
+Status of RAD: In Standby mode
+Xenon Water tank: Added an “emergency mixing tank” from de-ionized in case of critical failure
+of a GdWLP (MarcoB, Ekaterina).
+2. DQM (Caio)
+Github repo: https://github.com/XENONnT/data-quality-management
+Plots saved in: “/project2/lgrandi/dataquality/plots”
+More plots (7 days and 30 days plots) in:
+https://xenonnt.slack.com/archives/C064APR05EH/p1781147007907359
+--- Page 2 ---
+Last
+update:
+2026/06/11
+16:12xenon:xenonnt:dsg:nt:bi_weekly:20260611 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260611
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/07/25 20:06
+Fig. 1: This week's DQM plot (15 days)
+--- Page 3 ---
+2026/07/25 20:06 3/9 XENONnT commissioning meeting– 2026-06-11
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/ Fig. 1: This week's DQM
+plot (25 hours))
+3. Activities:
+CRY/LXePUR
+CRY: LXe accumulator
+New proportional control valve being fabricated by Thermomess Srl
+Thermomess provided curve of expected ﬂow coeﬃcient versus plug travel, satisfactory
+Will update once we have a delivery date
+LXePUR
+Q5 puriﬁer emptied and reﬁlled with new pellets last Monday, regenerated Tuesday
+LXe from St707 puriﬁer circuit returned to cryostat yesterday
+Q5 puriﬁer vessel installed today
+Cool down and LXe ﬂow through Q5 puriﬁer in the next couple of days
+--- Page 4 ---
+Last
+update:
+2026/06/11
+16:12xenon:xenonnt:dsg:nt:bi_weekly:20260611 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260611
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/07/25 20:06MV & NV
+Recap of the four sampling positions:
+L: Water Tank ﬂoor
+M: Neutron Veto ﬂoor
+L: above the NV ceiling
+the last one is measured in the input branch of the GdPlant, so it reﬂects the top of the WT
+where the main output pipe comes from.
+
+--- Page 5 ---
+2026/07/25 20:06 5/9 XENONnT commissioning meeting– 2026-06-11
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/
+
+--- Page 6 ---
+Last
+update:
+2026/06/11
+16:12xenon:xenonnt:dsg:nt:bi_weekly:20260611 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260611
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/07/25 20:06
+Slow Control (Mahmoud)
+AEX_To_SMS Update
+Why Should You Listen: Our slow control is only as good as our alarm notiﬁcation system. This
+code is critical for operation, so I ask for your attention, review, and cooperation.
+What Is AEX_To_SMS : AEX_To_SMS  is the notiﬁcation service that receives alarm messages directly
+from the XENON SCADA Alarm & Event Express system, records them, and forwards important alarms
+by email, SMS, and now Slack. It was written by Miguel Silva.
+--- Page 7 ---
+2026/07/25 20:06 7/9 XENONnT commissioning meeting– 2026-06-11
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/What Changed:
+Alarm ﬂood control  was added for email, SMS, and Slack notiﬁcations. More details below.
+Slack is now sent directly by AEX_To_SMS , instead of through the old Google Apps Script
+that scanned Gmail. This should reduce delay signiﬁcantly. Due to TLS/certiﬁcate limitations on
+the SCADA machine, Slack is not sent directly from AEX_To_SMS  to Slack; delivery is routed
+through a small remote VM relay, but the delay is still expected to be much shorter than the old
+Gmail polling method.
+A separate uncensored Slack channel  was added for broad alarm visibility. It receives
+alarms with severity > 100 , except SCT099  heartbeat alarms.
+The usual Slack channel remains ﬁltered  and keeps the previous formatted messages.
+Test commands  were added for database, Slack, uncensored Slack, SMS, LNGS SMTP, Gmail,
+and Postmark. They allow testing parts of the alarm-notiﬁcation chain independently, which
+makes debugging safer and faster before touching the full running service or disturbing SCADA
+operation.
+Secrets moved to a local secrets ﬁle  and are no longer kept in code. This allows the code
+to be kept in git without exposing passwords, tokens, or webhook URLs.
+Why Alarm ﬂood control:  Alarm ﬂoods can happen when a value crosses a threshold repeatedly,
+many related alarms arrive together, SCADA restarts, or Alarm & Event Express reports alarm-status
+changes. Floods cause SMS cost, mail-server load, nuisance notiﬁcations, and can hide important
+alarms inside repeated messages.
+Flood Mechanism:  Each unique alarm is identiﬁed by the notiﬁcation channel, alarm code, and
+alarm text after removing only measured numeric values. The ﬁrst alarm is sent. Repeated alarms
+with the same key inside the cooldown are suppressed only when wet mode is enabled. If severity
+increases, it is sent immediately. When a ﬂood is identiﬁed (the same alarm happening again in the
+cooldown period), a short check for alarm flood  warning is sent to the usual Slack channel and
+to the shifters by email/sms. This warning is intentionally limited, so the ﬂood warning does not
+become another ﬂood.
+Integration Steps:  The new tester commands passed successfully, conﬁrming that the
+secrets.txt  infrastructure works as expected. The new code also ran in dry mode, with ﬂood
+decisions logged to the database but without actually suppressing email/SMS notiﬁcations. The
+attached DB snapshot shows an example.
+For the weekend, we will revert back to the good old trusted production version.
+Next week:
+Code review by Zhaowei and Mahmoud, plus anyone else interested.1.
+Q&A with anyone interested, especially operation masters, to collect feedback.2.
+Move to the new code with Slack in wet mode, while SMS and email remain in the usual mode.3.
+Run tests with fake alarms.4.
+Monitor closely through the week.5.
+After the next operation call, if behavior is acceptable, enable SMS/email wet modes as well.6.
+More details will become available here (still WIP): AEX_To_SMS Notiﬁcations and Alarm Flood Control
+--- Page 8 ---
+Last
+update:
+2026/06/11
+16:12xenon:xenonnt:dsg:nt:bi_weekly:20260611 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260611
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/07/25 20:06DAQ (Andrew)
+DAQ status has signiﬁcantly improved since last week with most issues now resolved:
+Major issue we discovered ~7 weeks ago which was causing 'corrupted data' was resolved by
+ﬁxing the library the code is compiled against (CAEN bug)
+Crate issue identiﬁed last week - we removed 8 high energy boards and ran with this. The
+system was stable throughout the electrodes test and Th232 calibration (highest rate we do).
+We want to replace the power supply next week. We have identiﬁed a compatibility issue which
+we think we can resolve (Thanks Kai/Xiaoxin)
+Issue with LED runs (identiﬁed by Luisa) where some boards were not running ﬁxed this week -
+issue with CAEN updated ﬁrmware
+Issue with crate IP addresses - resolved
+TPC/Electrodes
+Took data over the weekend with Cathode at -12.0 kV, Gate at -2 k.V, and Anode at 4.0 kV
+Continued planned electrode tests of top stack starting Monday by ramping Anode to higher
+voltages
+Experienced trips at 4.75 kV and 5.00 kV
+No light emission observed in coincidence with either trip.
+Left electrodes at same settings Monday night as over weekend to study relaxation time
+of SEG.
+On Tuesday:
+Experienced another anode trip at 4.75 kV
+Decided to switch to increasing gate negative voltage.
+Successfully reached -3.75 kV on Gate and 4.25 kV on Anode for 8.0 kV potential
+diﬀerence in extraction region.
+Next steps:
+It would be preferential to be able to operate at higher anode voltages as does not require
+increasing cathode voltage to compensate for more negative gate.
+Origin of trips not clear, but at least not because of discharges between electrodes
+Suggested next steps:
+Electrode test at even lower anode voltage, but pushing gate to -6.0 kV to test if it
+also experiences trips beyond 4.5 kV, as this could indicate common problem at
+feedthroughs.
+If no gate trips occurr, test anode on a diﬀerent HV board to beyond 4.5 kV.
+(Currently all electrodes except for cathode are on XE1T.CTPC2.Board00)
+With info from above, choose appropriate potential settings for top electrodes and
+inject Kr83m to compare real extraction eﬃciency with simulated extraction
+eﬃciency.
+Make ﬁnal decision on run conﬁguration for SR3
+Krypton and Radon distillation (Lutz)
+--- Page 9 ---
+2026/07/25 20:06 9/9 XENONnT commissioning meeting– 2026-06-11
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/Schedule Building
+Moving to a special schedule wiki page
+From:
+https://xe1t-wiki.lngs.infn.it/  - XENON1TWiki
+Permanent link:
+https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260611
+Last update: 2026/06/11 16:12

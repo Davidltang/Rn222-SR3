@@ -1,0 +1,170 @@
+# ═══════════════════════════════════════════════════════════════
+# AFT FIDUCIAL CUT — applied after corrections
+# ═══════════════════════════════════════════════════════════════
+
+AFT_MIN = 0.1
+AFT_MAX = 0.55
+
+m_aft = (d_cor['area_fraction_top'] > AFT_MIN) & (d_cor['area_fraction_top'] < AFT_MAX)
+
+fig, axes = plt.subplots(2, 2, figsize=(16, 10))
+
+# Top-left: AFT 1D
+ax = axes[0, 0]
+ax.hist(d_cor['area_fraction_top'], bins=200, range=[0, 0.7],
+        color='gray', alpha=0.7, label=f'Before AFT cut ({len(d_cor):,})')
+ax.hist(d_cor.loc[m_aft, 'area_fraction_top'], bins=200, range=[0, 0.7],
+        color='steelblue', alpha=0.5,
+        label=f'AFT in [{AFT_MIN}, {AFT_MAX}] ({m_aft.sum():,})')
+ax.axvline(x=AFT_MIN, color='red', ls='--', lw=2)
+ax.axvline(x=AFT_MAX, color='red', ls='--', lw=2)
+ax.axvspan(0, AFT_MIN, alpha=0.1, color='red')
+ax.axvspan(AFT_MAX, 0.7, alpha=0.1, color='red')
+ax.set_xlabel('Area Fraction Top')
+ax.set_ylabel('Counts')
+ax.set_yscale('log')
+ax.set_title('AFT Fiducial Cut (post-correction)', fontweight='bold')
+ax.legend(fontsize=8)
+
+# Top-right: AFT+r² Corrected Area vs AFT
+ax = axes[0, 1]
+h = ax.hist2d(d_cor['area_2_corrected']/1e3, d_cor['area_fraction_top'],
+              bins=[200, 150], range=[[5, 110], [0, 0.7]],
+              cmin=1, norm=matplotlib.colors.LogNorm(), cmap='viridis')
+ax.axhline(y=AFT_MIN, color='red', ls='--', lw=2)
+ax.axhline(y=AFT_MAX, color='red', ls='--', lw=2)
+ax.set_xlabel('AFT+r² Corrected Area [10³ PE]')
+ax.set_ylabel('Area Fraction Top')
+ax.set_title('AFT+r² Corrected Area vs AFT')
+plt.colorbar(h[3], ax=ax, label='Counts')
+
+# Bottom-left: Area 1D before/after
+ax = axes[1, 0]
+ax.hist(d_cor['area_2_corrected'], bins=300, range=[0, 150e3],
+        color='gray', alpha=0.7, label=f'Before AFT cut ({len(d_cor):,})')
+ax.hist(d_cor.loc[m_aft, 'area_2_corrected'], bins=300, range=[0, 150e3],
+        color='steelblue', alpha=0.5,
+        label=f'Pass AFT cut ({m_aft.sum():,})')
+ax.set_xlabel('AFT+r² Corrected Area [PE]')
+ax.set_ylabel('Counts')
+ax.set_yscale('log')
+ax.set_title('Area Spectrum — AFT Cut Effect', fontweight='bold')
+ax.legend(fontsize=8)
+
+# Bottom-right: Removed events
+ax = axes[1, 1]
+removed = ~m_aft
+h = ax.hist2d(d_cor.loc[removed, 'area_2_corrected']/1e3,
+              d_cor.loc[removed, 'area_fraction_top'],
+              bins=[100, 100], range=[[0, 150], [0, 1.0]],
+              cmin=1, norm=matplotlib.colors.LogNorm(), cmap='Reds')
+ax.axhline(y=AFT_MIN, color='white', ls='--', lw=1.5)
+ax.axhline(y=AFT_MAX, color='white', ls='--', lw=1.5)
+ax.set_xlabel('AFT+r² Corrected Area [10³ PE]')
+ax.set_ylabel('Area Fraction Top')
+ax.set_title(f'Removed by AFT Cut ({removed.sum():,} events)', fontweight='bold')
+plt.colorbar(h[3], ax=ax, label='Counts')
+
+fig.suptitle('AFT Fiducial Cut', fontsize=14, fontweight='bold', y=1.02)
+safe_tight(fig)
+plt.show()
+
+# ── Apply AFT cut ──
+d_cor_aft = d_cor[m_aft].copy().reset_index(drop=True)
+
+print(f'Post-correction AFT cut [{AFT_MIN}, {AFT_MAX}]:')
+print(f'  Before: {len(d_cor):,}')
+print(f'  After:  {len(d_cor_aft):,}')
+print(f'  Removed: {(~m_aft).sum():,} ({100*(~m_aft).sum()/len(d_cor):.1f}%)')
+
+# ═══════════════════════════════════════════════════════════════
+# FV CUT — in corrected r² vs AFT space (r2_aft_corrected)
+# ═══════════════════════════════════════════════════════════════
+
+AFT_FV_MIN, AFT_FV_MAX = 0.13, 0.46
+R2_FV_MAX = 3800
+
+m_fv = (
+    (d_cor_aft['area_fraction_top'] >= AFT_FV_MIN) &
+    (d_cor_aft['area_fraction_top'] <= AFT_FV_MAX) &
+    (d_cor_aft['r2_aft_corrected'] >= 0) &
+    (d_cor_aft['r2_aft_corrected'] <= R2_FV_MAX)
+)
+
+print(f'\nFV cut [AFT {AFT_FV_MIN}-{AFT_FV_MAX}, r2_aft_corrected < {R2_FV_MAX}]:')
+print(f'  Before: {len(d_cor_aft):,}')
+print(f'  After:  {m_fv.sum():,}')
+print(f'  Removed: {(~m_fv).sum():,} ({100*(~m_fv).sum()/len(d_cor_aft):.1f}%)')
+
+# ── FV Cut diagnostic plots ──
+fig, axes = plt.subplots(2, 2, figsize=(16, 10))
+
+# Top-left: r2_aft_corrected 1D before/after
+ax = axes[0, 0]
+ax.hist(d_cor_aft['r2_aft_corrected'], bins=200, range=[0, 100],
+        color='gray', alpha=0.7, label=f'Before FV cut ({len(d_cor_aft):,})')
+ax.hist(d_cor_aft.loc[m_fv, 'r2_aft_corrected'], bins=200, range=[0, 100],
+        color='steelblue', alpha=0.5,
+        label=f'r²_corr < {R2_FV_MAX} ({m_fv.sum():,})')
+ax.axvline(x=R2_FV_MAX, color='red', ls='--', lw=2)
+ax.axvspan(R2_FV_MAX, 200, alpha=0.1, color='red')
+ax.set_xlabel('r2_aft_corrected [cm²]')
+ax.set_ylabel('Counts')
+ax.set_yscale('log')
+ax.set_title('FV Cut — r2_aft_corrected Distribution', fontweight='bold')
+ax.legend(fontsize=8)
+
+# Top-right: r2_aft_corrected vs AFT with FV box
+ax = axes[0, 1]
+h = ax.hist2d(d_cor_aft['r2_aft_corrected'], d_cor_aft['area_fraction_top'],
+              bins=[150, 150], range=[[0, 200], [0, 0.7]],
+              cmin=1, norm=matplotlib.colors.LogNorm(), cmap='viridis')
+from matplotlib.patches import Rectangle
+rect = Rectangle((0, AFT_FV_MIN), R2_FV_MAX, AFT_FV_MAX - AFT_FV_MIN,
+                 linewidth=2, edgecolor='red', facecolor='none', ls='--')
+ax.add_patch(rect)
+ax.axhline(y=AFT_FV_MIN, color='red', ls='--', lw=2)
+ax.axhline(y=AFT_FV_MAX, color='red', ls='--', lw=2)
+ax.set_xlabel('r2_aft_corrected [cm²]')
+ax.set_ylabel('Area Fraction Top')
+ax.set_title('r2_aft_corrected vs AFT — FV Region')
+plt.colorbar(h[3], ax=ax, label='Counts')
+
+# Bottom-left: AFT+r² Corrected Area 1D before/after
+ax = axes[1, 0]
+ax.hist(d_cor_aft['area_2_corrected'], bins=300, range=[0, 150e3],
+        color='gray', alpha=0.7, label=f'Before FV cut ({len(d_cor_aft):,})')
+ax.hist(d_cor_aft.loc[m_fv, 'area_2_corrected'], bins=300, range=[0, 150e3],
+        color='steelblue', alpha=0.5,
+        label=f'Pass FV cut ({m_fv.sum():,})')
+ax.set_xlabel('AFT+r² Corrected Area [PE]')
+ax.set_ylabel('Counts')
+ax.set_yscale('log')
+ax.set_title('Area Spectrum — FV Cut Effect', fontweight='bold')
+ax.legend(fontsize=8)
+
+# Bottom-right: AFT 1D before/after
+ax = axes[1, 1]
+ax.hist(d_cor_aft['area_fraction_top'], bins=200, range=[0, 0.7],
+        color='gray', alpha=0.7, label=f'Before FV cut ({len(d_cor_aft):,})')
+ax.hist(d_cor_aft.loc[m_fv, 'area_fraction_top'], bins=200, range=[0, 0.7],
+        color='steelblue', alpha=0.5,
+        label=f'AFT in [{AFT_FV_MIN}, {AFT_FV_MAX}] ({m_fv.sum():,})')
+ax.axvline(x=AFT_FV_MIN, color='red', ls='--', lw=2)
+ax.axvline(x=AFT_FV_MAX, color='red', ls='--', lw=2)
+ax.axvspan(0, AFT_FV_MIN, alpha=0.1, color='red')
+ax.axvspan(AFT_FV_MAX, 0.7, alpha=0.1, color='red')
+ax.set_xlabel('Area Fraction Top')
+ax.set_ylabel('Counts')
+ax.set_yscale('log')
+ax.set_title('AFT Distribution — FV Cut Effect', fontweight='bold')
+ax.legend(fontsize=8)
+
+fig.suptitle('FV Fiducial Cut', fontsize=14, fontweight='bold', y=1.02)
+safe_tight(fig)
+plt.show()
+
+# ── Apply FV cut ──
+d_cor_aft = d_cor_aft[m_fv].copy().reset_index(drop=True)
+
+print(f'\nd_cor_aft has {len(d_cor_aft):,} events — ready for rate calculation.')

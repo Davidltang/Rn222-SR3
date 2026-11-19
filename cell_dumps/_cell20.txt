@@ -1,0 +1,7 @@
+### Correction 2: AFT vs r²
+
+Quantify the correlation between AFT (depth proxy) and r² (radial position).
+Use **Rn-222 band events** (tagged `in_rn_band` in Correction 1) and fit in **AFT (x) vs r² (y)** space.
+Fit `r²(AFT) =` degree-N polynomial, then correct **r²** to the reference AFT → `r2_aft_corrected`.
+
+Fit range: AFT ∈ [0.11, 0.55], r² ∈ [0, 700] cm².

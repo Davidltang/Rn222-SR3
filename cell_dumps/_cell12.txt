@@ -1,0 +1,20 @@
+# ============================================================
+# Run selection: newest ~300 s1_only runs available
+# ============================================================
+#comment: use this run selection code
+
+# Convert 'name' to integer for sorting
+runs_sr3['name_int'] = runs_sr3['name'].astype(int)
+
+# Sort by run number descending (newest first), take newest 300
+runs_sorted = runs_sr3.sort_values('name_int', ascending=False)
+runs_newest = runs_sorted.head(100)
+
+run_id_sr3 = runs_newest['name'].tolist()
+run_id_sr3 = run_id_sr3[::-1]  # Reverse to go oldest→newest for loading
+
+print(f"Total s1_only runs available: {len(runs_sr3)}")
+print(f"Selected newest {len(run_id_sr3)} runs")
+print(f"Run range: {run_id_sr3[0]} — {run_id_sr3[-1]}")
+print(f"First 5: {run_id_sr3[:5]}")
+print(f"Last 5:  {run_id_sr3[-5:]}")

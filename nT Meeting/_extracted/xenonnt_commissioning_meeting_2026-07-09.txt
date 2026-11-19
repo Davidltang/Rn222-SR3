@@ -1,0 +1,89 @@
+=== xenonnt_commissioning_meeting_2026-07-09 ===
+Total pages: 4
+
+--- PAGE 1 ---
+2026/07/25 19:53 1/4 XENONnT commissioning meeting– 2026-07-09
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/XENONnT commissioning meeting–
+2026-07-09
+Zoom
+Agenda
+1. News from Operations Manager + Run Coordinator (Petr, Ekaterina)
+DAQ/SC system:
+The high energy veto unit needs repaired. Unit was dismounted and prepared for the
+shipment to FreiburgU.
+There was an issue with the SCADA1 computer. The SCADA1 itself is operating as a
+degrading host (memory reduced from 64 to 48 unfortunately already 32 GB). TPC PMTs
+automated calibration process was aﬀected. CAEN HV crates (3 out of 4) have
+communication/control problem. CAEN was contacted for the issue. We've updated the
+ﬁrmware, trying to reconnect it to SCADA. As for today (09.07.2026) we're waiting for
+CAEN to respond.
+LXe PUR:
+Filter status: Q5 was successfully replaced by new St707
+PM was re-calibrated, measured e-Lifetime is ~ 11-12 ms
+Accumulator status: New regulation valve LT110 (TermoMech, ﬁne adjustment) was
+completed, delivered (thanks to Siyuan and Federico for picking up valve at TermoMech
+facility) and installed.
+muVeto/nVeto:
+PMTs: currently are OFF due to the operation on top of the WT due to the water pumping
+from the HG pipe;
+Calibration:  Liquid (pure water or GDSO solution?) was observed inside the NG pipes. Liquid is
+pumping out and NG pipe is under the preparation for drying.
+CRYO/PUR:  Stable operation
+TPC:
+PMTs/Electrodes status: HVs are OFF due to CAEN HV crates communication/control
+problem
+After the installation and tests of the new Accumulator valve TPC liquid level was
+stabilized at 5 mm.
+DST/RAD:
+Status of the DST: Online Kr distillation is ongoing;
+Status of RAD: In Standby mode.
+2. DQM (Caio)
+Github repo: https://github.com/XENONnT/data-quality-management
+Plots saved in: “/project2/lgrandi/dataquality/plots”
+More plots (7 days and 30 days plots) in:
+https://xenonnt.slack.com/archives/C064APR05EH/p1783577758429569
+
+--- PAGE 2 ---
+Last
+update:
+2026/07/09
+16:07xenon:xenonnt:dsg:nt:bi_weekly:20260709 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260709
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/07/25 19:53
+Fig. 1: This week's DQM plot (15 days)
+3. Activities:
+CRY/LXePUR
+LXe accumulator
+LXe liquid level control with the new LCV110 valve was tested
+Diﬀerent control valve openings and duration tested
+For optimal control we will need to implement modiﬁcations to the CRY PAC basic control
+algorithm
+LXePUR
+Transfer from Q5 puriﬁer to St707 puriﬁer performed last Friday
+
+--- PAGE 3 ---
+2026/07/25 19:53 3/4 XENONnT commissioning meeting– 2026-07-09
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/Large variations in LXe level in the TPC but LXe remained below the anode
+MV & NV
+Slow Control (Mahmoud)
+
+--- PAGE 4 ---
+Last
+update:
+2026/07/09
+16:07xenon:xenonnt:dsg:nt:bi_weekly:20260709 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260709
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/07/25 19:53DAQ (Andrew)
+Sorry I cannot join this week:
+We are getting the high energy veto shipped back to Freiburg. The other unit we have also has
+other issues and is being repaired in our workshop. We can run the detector without the HEV,
+but the impacts on data quality need to be closely studied. We are also lookign at other options.
+Working with SC on the HV crates - mostly hardware seems good following a ﬁrmware update, it
+is the communication with the server that has the issues now.
+Scintillator cell integration ready to be tested (depending on leaky conduit situation).
+TPC/Electrodes
+Krypton and Radon distillation (Lutz)
+4. Schedule:
+From:
+https://xe1t-wiki.lngs.infn.it/  - XENON1TWiki
+Permanent link:
+https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260709
+Last update: 2026/07/09 16:07

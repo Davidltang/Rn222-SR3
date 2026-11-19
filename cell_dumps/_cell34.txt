@@ -1,0 +1,128 @@
+# ═══════════════════════════════════════════════════════════════
+# TIME VARIATION — all isotopes rate vs time (±2σ window)
+# ═══════════════════════════════════════════════════════════════
+# 5 parallel subplots, before & after on each.
+
+from datetime import datetime, timezone
+
+FMASS = 3660.0       # kg
+N_TIME_BINS = 300
+N_SIGMA_ISO = 2
+
+if not ok_before or not ok_after:
+    print('Skipping time variation — one or both fits failed.')
+else:
+    # ── Global time range for consistent binning ──
+    t_all_ns = rn_events['time'].values
+    t_start_ns = t_all_ns.min()
+    t_end_ns   = t_all_ns.max()
+    time_edges_ns = np.linspace(t_start_ns, t_end_ns, N_TIME_BINS + 1)
+    time_centers_ns = 0.5 * (time_edges_ns[:-1] + time_edges_ns[1:])
+    bin_width_s = (time_edges_ns[1] - time_edges_ns[0]) / 1e9
+
+    t_centers_dt = [datetime.fromtimestamp(tc / 1e9, tz=timezone.utc)
+                    for tc in time_centers_ns]
+
+    def count_per_bin(events, lo, hi, edges):
+        mask = ((events['area_2_corrected'] >= lo) & (events['area_2_corrected'] <= hi))
+        t_sel = events.loc[mask, 'time'].values
+        counts, _ = np.histogram(t_sel, bins=edges)
+        return counts
+
+    # ── Compute for all isotopes ──
+    results = {}  # results[name] = {rate_before, rate_after, err_before, err_after, lo/lo, ...}
+
+    for i, name in enumerate(PEAK_NAMES):
+        # before fit
+        mu_b, sig_b = p_before[3*i + 1], p_before[3*i + 2]
+        lo_b = mu_b - N_SIGMA_ISO * sig_b
+        hi_b = mu_b + N_SIGMA_ISO * sig_b
+
+        # after fit
+        mu_a, sig_a = p_after[3*i + 1], p_after[3*i + 2]
+        lo_a = mu_a - N_SIGMA_ISO * sig_a
+        hi_a = mu_a + N_SIGMA_ISO * sig_a
+
+        c_b = count_per_bin(events_before, lo_b, hi_b, time_edges_ns)
+        c_a = count_per_bin(events_after,  lo_a, hi_a, time_edges_ns)
+
+        results[name] = {
+            'rate_before': c_b / (bin_width_s * FMASS) * 1e6,
+            'rate_after':  c_a / (bin_width_s * FMASS) * 1e6,
+            'err_before':  np.sqrt(np.maximum(c_b, 1)) / (bin_width_s * FMASS) * 1e6,
+            'err_after':   np.sqrt(np.maximum(c_a, 1)) / (bin_width_s * FMASS) * 1e6,
+            'lo_before': lo_b, 'hi_before': hi_b,
+            'lo_after':  lo_a, 'hi_after':  hi_a,
+        }
+
+        n_total = ((events_before['area_2_corrected'] >= lo_b) & (events_before['area_2_corrected'] <= hi_b)).sum() + \
+                  ((events_after['area_2_corrected']  >= lo_a) & (events_after['area_2_corrected'] <= hi_a)).sum()
+        print(f'{name:10s}  ±{N_SIGMA_ISO}σ  before: [{lo_b:.0f}, {hi_b:.0f}] PE  |  '
+              f'after: [{lo_a:.0f}, {hi_a:.0f}] PE  |  total events: {n_total:,}')
+
+    # ═══════════════════════════════════════════════════════════
+    # 5 parallel subplots
+    # ═══════════════════════════════════════════════════════════
+    import matplotlib.dates as mdates
+
+    fig, axes = plt.subplots(N_PEAKS, 1, figsize=(18, 2.4 * N_PEAKS), sharex=True)
+
+    for ax, name in zip(axes, PEAK_NAMES):
+        r = results[name]
+        r_b, r_a = r['rate_before'], r['rate_after']
+        e_b, e_a = r['err_before'], r['err_after']
+
+        # Cutoff line
+        ax.axvline(x=datetime.fromtimestamp(boundary_ns/1e9, tz=timezone.utc),
+                   color='black', ls='-', lw=1.5, alpha=0.4)
+
+        # Mean values (compute first for legend labels)
+        nz_b = r_b > 0
+        nz_a = r_a > 0
+        mean_b = r_b[nz_b].mean()
+        mean_a = r_a[nz_a].mean()
+
+        # After (behind)
+        ax.errorbar(np.array(t_centers_dt)[nz_a], r_a[nz_a], yerr=e_a[nz_a],
+                    fmt='o', color='darkorange', markersize=3, capsize=1.5, lw=0.3,
+                    label=f'After: {mean_a:.2f} μBq/kg')
+
+        # Before (on top)
+        ax.errorbar(np.array(t_centers_dt)[nz_b], r_b[nz_b], yerr=e_b[nz_b],
+                    fmt='o', color='steelblue', markersize=3, capsize=1.5, lw=0.3,
+                    label=f'Before: {mean_b:.2f} μBq/kg')
+
+        # Mean lines
+        ax.axhline(y=mean_b, color='steelblue', ls='--', lw=1, alpha=0.6)
+        ax.axhline(y=mean_a, color='darkorange', ls='--', lw=1, alpha=0.6)
+
+        ax.set_ylabel(f'{name}\n[μBq/kg]', fontsize=9)
+        ax.legend(fontsize=7, loc='upper right', ncol=2)
+        ax.grid(True, alpha=0.25)
+
+    # X-axis formatting on bottom subplot
+    axes[-1].xaxis.set_major_formatter(mdates.DateFormatter('%m/%d', tz=timezone.utc))
+    axes[-1].xaxis.set_major_locator(mdates.AutoDateLocator())
+    axes[-1].set_xlabel('UTC Time', fontsize=11)
+    fig.autofmt_xdate(rotation=0, ha='center')
+
+    fig.suptitle(f'Time Variation of Alpha Rates (±{N_SIGMA_ISO}σ, before/after {CUTOFF_DATE})',
+                 fontsize=14, fontweight='bold')
+    safe_tight(fig)
+    plt.show()
+
+    # ── Summary table ──
+    print(f'\n{"="*85}')
+    print(f'  TIME VARIATION SUMMARY  (±{N_SIGMA_ISO}σ, {N_TIME_BINS} bins × {bin_width_s/3600:.1f} h)')
+    print(f'  Time range: {t_centers_dt[0].strftime("%Y-%m-%d %H:%M")} → '
+          f'{t_centers_dt[-1].strftime("%Y-%m-%d %H:%M")} UTC')
+    print(f'{"="*85}')
+    print(f'{"Isotope":10s}  {"Before mean":>14s}  {"After mean":>14s}  {"Ratio A/B":>10s}')
+    print(f'{"-"*85}')
+    for name in PEAK_NAMES:
+        r = results[name]
+        mb = r['rate_before'][r['rate_before'] > 0].mean()
+        ma = r['rate_after'][r['rate_after'] > 0].mean()
+        ratio = ma / mb if mb > 0 else float('nan')
+        print(f'{name:10s}  {mb:10.2f} μBq/kg  {ma:10.2f} μBq/kg  {ratio:10.4f}')
+    print(f'{"="*85}')

@@ -1,0 +1,153 @@
+--- PAGE 1 ---
+2026/07/25 19:52 1/12 XENONnT commissioning meeting– 2026-07-23
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/XENONnT commissioning meeting–
+2026-07-23
+Zoom
+Agenda
+1. News from Operations Manager + Run Coordinator (Petr)
+SC system:
+SC computer was reinstalled in SC room (#329) in HdM.
+DAQ:
+Very stable operation for both TPC and Vetoes during the HV tests/LED calibrations
+(including Kr83m for TPC and AmBe for Vetoes). There are still few issues like HEV
+(electronics module) and coupled DAQ  operation mode didn't checked yet.
+LXe PUR:
+Accumulator status: SC work in progress. Final commissioning is scheduled for early next
+week.
+TPC:
+PMTs: HVs are ON, LED calibrations are regularly taken.
+Electrodes status: Electrodes HV test re-started yesterday (July 21). The current status of
+Electrodes is: Cathode at -22.5 kV  with the drift ﬁeld of ~0.133 kV/cm  and stable over
+~26 hrs. Top Stack voltage diﬀerence is 6.5 kV  (Anode +4.0 kV, Gate at -2.5 kV). Stability
+test is currently ongoing. Few warm spots were observed.
+Calibration:
+Joint CAL/Vetoes groups meeting to discuss possible solutions for NG calibrations.
+2. DQM (Caio)
+Github repo: https://github.com/XENONnT/data-quality-management
+Plots saved in: “/project2/lgrandi/dataquality/plots”
+More plots (7 days and 30 days plots) in:
+https://xenonnt.slack.com/archives/C064APR05EH/p1784804532873829
+
+--- PAGE 2 ---
+Last
+update:
+2026/07/23
+16:04xenon:xenonnt:dsg:nt:bi_weekly:20260723 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260723
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/07/25 19:52
+Fig. 1: This week's DQM plot (15 days)
+
+--- PAGE 3 ---
+2026/07/25 19:52 3/12 XENONnT commissioning meeting– 2026-07-23
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/3. Activities:
+CRY/LXePUR
+LXe Accumulator
+Control algorithm implemented in CRY PAC (details below)
+Plan would be to test as early as possible next week (Monday)
+About two days are required to pressurize the accumulator so it is at the LXe pump inlet
+pressure
+Data taking without LXe level disturbance every 6 hrs is possible during these two days
+MV & NV
+
+
+--- PAGE 4 ---
+Last
+update:
+2026/07/23
+16:04xenon:xenonnt:dsg:nt:bi_weekly:20260723 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260723
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/07/25 19:52
+
+
+--- PAGE 5 ---
+2026/07/25 19:52 5/12 XENONnT commissioning meeting– 2026-07-23
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/
+
+
+--- PAGE 6 ---
+Last
+update:
+2026/07/23
+16:04xenon:xenonnt:dsg:nt:bi_weekly:20260723 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260723
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/07/25 19:52
+
+
+--- PAGE 7 ---
+2026/07/25 19:52 7/12 XENONnT commissioning meeting– 2026-07-23
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/Slow Control (Mahmoud)
+The accumulator SCADA screen and PAC code, including the adaptive loop and ﬁltered LT110
+data, are now implemented and have been partially tested in decoupled mode. We are waiting
+for feedback from the CRY team before making further changes.
+Mahmoud and the shifters have taken care of labeling the servers.
+Zhaowei has started cleaning up the historian points.
+For new SC requests, please use the Slack request forms:
+/sc permissions - Permissions and expert/shifter access1.
+/sc user - New users, password resets, or account checks2.
+/sc ticket - Any other SC request3.
+
+--- PAGE 8 ---
+Last
+update:
+2026/07/23
+16:04xenon:xenonnt:dsg:nt:bi_weekly:20260723 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260723
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/07/25 19:52
+
+
+--- PAGE 9 ---
+2026/07/25 19:52 9/12 XENONnT commissioning meeting– 2026-07-23
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/
+
+
+--- PAGE 10 ---
+Last
+update:
+2026/07/23
+16:04xenon:xenonnt:dsg:nt:bi_weekly:20260723 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260723
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/07/25 19:52
+
+
+--- PAGE 11 ---
+2026/07/25 19:52 11/12 XENONnT commissioning meeting– 2026-07-23
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/
+DAQ (Andrew)
+TPC/Electrodes
+On Friday July 17th:
+During cathode ramp started observing light in PMTs around PMT493/488 at very high
+
+--- PAGE 12 ---
+Last
+update:
+2026/07/23
+16:04xenon:xenonnt:dsg:nt:bi_weekly:20260723 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260723
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/07/25 19:52cathode voltages.
+Ramped cathode to -24 kV, and experienced discharge and light emission. Cathode HV
+stabilized at -14 kV.
+Decided to return to -23 kV and test stability. Also applied 6.5 kV across top stack,
+observed hotspot forming at 6.0 kV diﬀerence
+After ~4 hours (Around 20h20 LNGS) at -23 kV, second light emission observed from
+cathode. Ramp down stopped at -7.6 kV.
+Severe hotspot (thunder spot?) observed at around 21H00, reduced top stack diﬀerential
+to 5.5 kV
+On Monday July 20th:
+Ramped down all electrodes to attempt to alleviate persistent hotspots.
+On Tuesday July 21st:
+Ramped cathode to -22.5 kV. (Aim was -23 kV but saw ﬁrst light emission from 493/488
+starting at -22.5 kV).
+Top electrode stack ramped to potential diﬀerence of 5.8 kV at which point hotspots re-
+emerged.
+On Wednesday July 22nd:
+After subsidence in intensity of hotspots ramped potential diﬀerence to 6.5 kV (later
+reduced to 6.25 kV) and continued to observe hotspots.
+On Thursday July 22nd:
+Observed hotspots to be largely alleviated by the morning.
+Ramped potential diﬀerence on top stack to 7.0 kV, increasing hotspot intensity again,
+but levels acceptable.
+Current conﬁguration: Cathode -22.5 kV, Gate -2.5 kV, Anode 4.0 kV
+(Top Screening Ring -460 V, Top Field Shaping Ring -2.5 kV, Bottom Screening Ring -3.7 kV
+Krypton and Radon distillation (Lutz)
+4. Schedule:
+From:
+https://xe1t-wiki.lngs.infn.it/  - XENON1TWiki
+Permanent link:
+https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260723
+Last update: 2026/07/23 16:04
+
+

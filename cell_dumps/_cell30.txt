@@ -1,0 +1,4 @@
+---
+## Rate Calculation
+
+Use all events after applying all fiducial cuts and corrections.

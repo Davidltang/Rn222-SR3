@@ -1,0 +1,275 @@
+--- Page 1 ---
+2026/06/07 21:09 1/11 S1-only radon event selection
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/S1-only radon event selection
+Dominick Cichon  (27.07.2021)
+Abstract : This note outlines a procedure for selecting radon alpha decay events in XENONnT based
+on S1 signal information only. In order to distinguish the diﬀerent mono-energetic peaks which are
+expected in the S1 spectrum as well as possible and to facilitate ﬁtting a model to the spectrum,
+several signal corrections are derived based on information which is available in S1-only data. The S1
+resolution for alpha events in the corrected spectrum amounts to ~1% or better. Besides simple
+counting of alpha events to estimate radon rates inside the sensitive volume, which are predicted to
+reach (1.75 +- 0.05) µBq/kg  in SR0 (corresponding of a reduction of 1.89 +- 0.09  via the RAD), the
+techniques presented here also allow for investigating charge insensitive regions within the XENONnT
+TPC.
+Motivation
+During RAD commissioning the anode was switched oﬀ due to liquid level variations for extended
+periods of time. A radon event selection for data during that period consequently necessitates only
+S1-based information to be used. For this reason, an S1-only framework is developed to analyze radon
+rates and, here, applied to SR0 data to determine and predict the total reduction of the radon rate
+achieved by the column.
+Data selection
+Runs
+Timeframes: 2021/07/01 00:00 UTC to 2021/07/21 00:00 UTC (correction deﬁnition), 2021/07/01
+00:00 UTC to 2021/07/27 00:00 UTC (S1 spectrum ﬁt and rates)
+Run modes: tpc_kr83m , tpc_radon , tpc_bkg , tpc_bkg_no_he , background_linked
+Excluded tags: abandon , bad, desync , FSR_test , messy , self-trigger , bad
+Excluded run numbers (issues when loading data): 25288
+Preselection cut: (type == 1) & (area > 1000)
+Cut deﬁnitions
+214Po cut: Distance to previous S1 above 1k PE should be within [0.7 µs, 570 µs] to select for
+214Po via the 214BiPo coincidence while removing 212Po from 212BiPos (see Fig. 01).
+210Po cut: Select the interval [39k PE, 44k PE] in S1 area after the step 1 correction (see
+corresponding section) which consists mostly of 210Po events.
+--- Page 2 ---
+Last
+update:
+2021/07/27
+10:46xenon:xenonnt:analysis:dominick:xenonnt_s1-only_radon_selection https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:analysis:dominick:xenonnt_s1-only_radon_selection
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/06/07 21:09Fig. 01: Time distance between two subsequent S1s (> 1k PE)
+How corrections are derived
+The parameter corrections/scalings in this analysis are all derived according to the procedure outlined
+in this section. After identifying the parameter to be corrected (called  here) and the parameter on
+which  depends (called  here),  is divided into slices of equal size. For each slice, the median of
+ for events within that slice is determined. In the end, an nth degree polynomial  is ﬁt via least
+squares minimization to the resulting data points.  values are then corrected as:
+with  being the reference value of .  is corrected such, that  for all values of
+. Values of  outside the range of the slices used for ﬁtting the polynomial are treated as being at
+the lower resp. upper bound of the ﬁt interval depending on whether  is below or above the interval.
+For example, if the ﬁt is made using  slices within [0, 10], the correction for  at  will be
+the same as the one at . This ensures, that the correction is also well-deﬁned for values outside
+the ﬁt range.
+The number of slices, the minimum amount of events required to include a slice in the ﬁt, the slice
+range, and the degree of the ﬁt polynomial are all outlined when corrections are mentioned in the
+later parts of this note. The data used for deﬁning corrections encompasses the period between
+2021/07/01 00:00 UTC to 2021/07/21 00:00 UTC (the ﬁnal period on which the preliminary analysis
+this note is based on ran).
+--- Page 3 ---
+2026/06/07 21:09 3/11 S1-only radon event selection
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/Signal corrections and naive position reconstruction
+Step 1 - based on S1 AFT
+Similar to a past analysis by Florian Joerg , the S1 area is corrected for its AFT dependence (Fig. 02).
+Here, the 214Po cut is used together with a preselection to deﬁne a clean sample on which to deﬁne
+the step 1 correction (Fig. 03). The result after applying the correction is shown in Fig. 04 and 05.
+Parameters for deriving the step 1 correction:
+S1 area range: [58.5k PE, 110k PE]
+S1 AFT range: [0, 0.7]
+S1 AFT reference: 0.3
+Number of slices: 100
+Minimum number of events per slice: 50
+S1 AFT ﬁt range: [0.08713, 0.5467]
+Fit polynomial degree: 15
+Fig. 02: S1 area vs. S1 AFT Fig. 03: S1 area vs. S1 AFT (214Po cut and preselection)
+Fig. 04: S1 area step 1 correction ﬁt Fig. 05: S1 area vs. S1 AFT (after step 1 correction)
+Naive position reconstruction
+To correct for radial LCE variations in addition to S1 AFT ones, one needs a measure for the radius
+--- Page 4 ---
+Last
+update:
+2021/07/27
+10:46xenon:xenonnt:analysis:dominick:xenonnt_s1-only_radon_selection https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:analysis:dominick:xenonnt_s1-only_radon_selection
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/06/07 21:09relative to the central TPC axis at which an interaction happens. Because only S1 information is to be
+used, one possibility is to weigh PMT coordinates with the fraction of an S1s area they see, which is
+called naive PosRec  here. The code of the plugin which has been used in this analysis can be found
+below.
+The naive r estimate can, together with S1 AFT, be used to make a rough map of the sensitive volume
+(Fig. 06). One immediately notices a dependence of the naive r on S1 AFT. To scale r such that it does
+not depend on S1 AFT an event sample is deﬁned by using the 210Po cut, which selects the wall event
+population already known from past XENON experiments, together with the preselection as outlined in
+Fig. 07. The result can be seen in Fig. 08 and 09.
+Parameters for deriving the naive r scaling:
+Naive r range: [0 cm, 32 cm]
+S1 AFT range: [0.08713, 0.5467]
+S1 AFT reference: 0.3
+Number of slices: 100
+Minimum number of events per slice: 50
+S1 AFT ﬁt range: [0.08721, 0.5283]
+Fit polynomial degree: 15
+Fig. 06: Naive r2 vs. S1 AFT Fig. 07: Naive r vs. S1 AFT (210Po cut and preselection)
+Fig. 08: Naive r scaling ﬁt Fig. 09: Naive r2 vs. S1 AFT (after scaling)
+import numpy as np
+--- Page 5 ---
+2026/06/07 21:09 5/11 S1-only radon event selection
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/ 
+import strax
+import straxen
+ 
+ 
+class PeakPositionsWeighted (strax.Plugin):
+    """
+    Provides naive XY position estimates based on area-weighing.
+    """
+    provides = 'peak_positions_weighted'
+    depends_on = ('peaks',)
+    dtype = [('x_weighted' , np.float32, 'Reconstructed X position (cm),
+uncorrected' ),
+             ('y_weighted' , np.float32, 'Reconstructed Y position (cm),
+uncorrected' )] + strax. time_fields
+    __version__ = '0.0.7'
+ 
+    def compute (self, peaks):
+        result = np.ones(len(peaks), dtype=self.dtype)
+        result ['time'], result['endtime' ] = peaks['time'],
+strax.endtime(peaks)
+ 
+        result ['x_weighted' ] *= float('nan')
+        result ['y_weighted' ] *= float('nan')
+ 
+        # weigh PMT positions with absoulte area observed in corresponding
+PMT
+        area_per_channel = peaks['area_per_channel' ]
+        weight_map = np.abs(area_per_channel ) /
+np.abs(area_per_channel ).sum(axis=1)[:, None]
+ 
+        result ['x_weighted' ] = (weight_map *
+straxen. pmt_positions ().x.values).sum(axis=1)
+        result ['y_weighted' ] = (weight_map *
+straxen. pmt_positions ().y.values).sum(axis=1)
+ 
+        return result
+Step 2 - based on naive position estimate
+In addition to the AFT, the scaled naive r estimate allows to correct for additional spatial light yield
+variations (Fig. 10). To deﬁne the sample, the 214Po cut is applied together with a selection which
+limits the S1 AFT to the step 1 correction ﬁt range (Fig. 11). The result is shown in Fig. 12 and 13.
+Parameters for deriving the step 2 correction:
+S1 area (after step 1) range: [6.5k PE, 8.0k PE]
+Scaled naive r2 range: [min, max]
+Scaled naive r2 reference: 0.0 cm2
+Number of slices: 100
+--- Page 6 ---
+Last
+update:
+2021/07/27
+10:46xenon:xenonnt:analysis:dominick:xenonnt_s1-only_radon_selection https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:analysis:dominick:xenonnt_s1-only_radon_selection
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/06/07 21:09Minimum number of events per slice: 25
+Scaled naive r2 ﬁt range: [0.1109 cm2, 50.84 cm2]
+Fit polynomial degree: 10
+Fig. 10: S1 area vs. scaled naive r Fig. 11: S1 area vs. scaled naive r (214Po cut and preselection)
+Fig. 12: S1 area step 2 correction ﬁt Fig. 13: S1 area vs. scaled naive r (after step 2 correction)
+Step 3 - based on light yield variations over time
+This correction is mostly necessary to account for a variation of the light yield observed during the
+second RAD start attempt in SR0 (see Fig. 14 and 15). The same preselection as for the step 2
+correction is used here. The result can be seen in Fig. 16 and 17.
+Parameters for deriving the step 3 correction:
+S1 area (after step 2) range: [6.5k PE, 8.0k PE]
+Timestamp range: [min, max]
+Timestamp reference: 0.0 ns relative to mean of all peak timestamps
+(1.6259375454895916e+18 ns)
+Number of slices: 100
+Minimum number of events per slice: 25
+Timestamp ﬁt range: [1.6251154730856842e+18 ns, 1.626805037986861e+18 ns]
+Fit polynomial degree: 15
+--- Page 7 ---
+2026/06/07 21:09 7/11 S1-only radon event selection
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/Fig. 14: S1 area vs. time Fig. 15: S1 area vs. time (214Po cut)
+Fig. 16: S1 area step 3 correction ﬁt Fig. 17: S1 area vs. time (after step 3 correction)
+S1 spectrum ﬁt
+Applying all S1 area corrections and requiring S1 AFT to be within [0.15, 0.455] (see Fig. 18 for a map)
+results in the spectrum seen in Fig. 19. It can already be seen that the peak positions relative to 222Rn
+deviate further from their expected locations towards higher S1 areas when assuming the S1 area to
+be directly proportional to the alpha energy. To remove the 210Po peak an upper threshold of 27 cm2 is
+applied to the scaled naive r2 estimate (Fig. 18), which gives Fig. 20. A sum of ﬁve Gaussians, which
+correspond to 222Rn, 218Po, 214Po, 220Rn, and 216Po each, is ﬁt to the resulting cleaner spectrum via a
+minimum unbinned negative log-likelihood ﬁt. The relative resolution is assumed to be common for
+every Gaussian besides the one used to model the 214Po peak, while the mean values and the relative
+amplitudes are left to vary freely. 212Bi, which is within the region of the 218Po peak, is not included as
+it is assumed to be negligible due to the more than factor ~10 diﬀerence in magnitude of the 220Rn
+chain compared to the 222Rn chain together with the ~36% branching fraction of the 212Bi alpha decay.
+Including the peak in the ﬁt also results in diﬃculties for the minimizer to arrive at a minimum for the
+reasons outlined in the previous sentence.
+The ﬁt (Fig. 21 and 22) yields a relative resolution of (0.84 +- 0.01) % for the 214Po peak and (0.886 +-
+0.005) % for the others. While deviations from the Gaussian shape might result in the estimated
+resolution to be better than it is, the ﬁt already indicates that a relative resolution of ~1 % is possible
+at S1 sizes of O(10k PE). This bodes well for future high-energy analyses reliant on good energy
+resolution, such as the search for the neutrinoless double-beta decay.
+--- Page 8 ---
+Last
+update:
+2021/07/27
+10:46xenon:xenonnt:analysis:dominick:xenonnt_s1-only_radon_selection https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:analysis:dominick:xenonnt_s1-only_radon_selection
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/06/07 21:09Fig. 18: Fiducial volume for S1 spectrum ﬁt (deﬁned by S1 AFT and scaled naive r2)
+Fig. 19: S1 spectrum with expected peak locations relative to 222Rn without
+naive r2 thresholdFig. 20: S1 spectrum with expected peak locations relative to 222Rn with naive r2
+threshold
+Fig. 21: S1 spectrum ﬁt (linear y-axis) Fig. 22: S1 spectrum ﬁt (logarithmic y-axis)
+--- Page 9 ---
+2026/06/07 21:09 9/11 S1-only radon event selection
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/Fig. 19: S1 spectrum with expected peak locations relative to 222Rn without
+naive r2 thresholdFig. 20: S1 spectrum with expected peak locations relative to 222Rn with naive r2
+threshold
+Radon rate estimation
+To ﬁnally determine radon rates, the S1 spectrum ﬁt results are used to deﬁne counting regions for
+each radon (daughter) nuclide. These are the 2 sigma intervals around each peak mean. Acceptance
+losses caused by the selection of the counting regions are corrected for. Almost none of the peaks
+that are accounted for overlap within these intervals, with the exception being 218Po and 220Rn. For
+these, the overlap (less than 0.1% of leakage into each other's regions) is taken into account for both
+the event number and its statistical error. The statistical error in this case is deﬁned as the central 1
+sigma conﬁdence interval.
+For the counting procedure itself, 12 subsequent runs (usually about 1 hour long) are combined per
+counting period. The counts are then divided by the combined livetime according to the run dababase
+entries to yield the rate per preiod. In order to ﬁnally determine the rate per mass, the ﬁducial mass
+of the ﬁducial volume of this analysis has to be estimated. Assuming 214Po to be uniformly distributed
+within the selected S1 AFT interval, the fraction of events left after applying the naive r2 threshold is
+(22.6 +- 0.5) % when comparing the number of events within the threshold in the 214Po region passing
+the 214Po cut (Fig. 23) to those which are outside the threshold (Fig. 24). The question remains about
+the mass content of the [0.15, 0.455] S1 AFT region, which Florian Joerg has answered by mapping S1
+AFT to the drift time using S1 + S2 information during similar light yield conditions as those in SR0.
+His analysis gives a mass of (3.66 +- 0.09) t.
+Combining everything together gives the rates for the 222Rn and 220Rn chain nuclides in Fig. 27 resp.
+28. For the error bars, the statistical counting errors have been added linearly together with the errors
+from the naive r2 threshold acceptance and the ﬁducial mass estimates. Similar to the radon analyses
+of XENON100 and XENON1T it is found that only about half of the expected 214Po decays are seen. The
+missing fraction is attributed to radon daughter plate out on detector components such as the
+cathode. While the other 222Rn chain decays have rates of about 3.3 µBq/kg, 220Rn chain rates are at
+about 0.1 µBq/kg or less.
+To now determine the impact of the RAD an eﬀective model is ﬁt to the 222Rn rate via least squares
+minimization (Fig. 28). For the procedure, the statistical counting errors are symmetrized and added
+quadratically together with the acceptance and ﬁducial mass errors to yield a more accurate estimate
+of the total statistical error. The model function is deﬁned as:
+--- Page 10 ---
+Last
+update:
+2021/07/27
+10:46xenon:xenonnt:analysis:dominick:xenonnt_s1-only_radon_selection https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:analysis:dominick:xenonnt_s1-only_radon_selection
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/06/07 21:09
+The start time  is ﬁxed to the start of RAD operations, which happened around 2021/07/05 07:50
+UTC. The decay constant  is set to the 222Rn literature value from the LNHB .
+At a Chi2/Ndf of 45.8/49 (p-value of 0.6), the value estimated for the equilibrium before RAD start is
+(3.31 +- 0.09) µBq/kg and (1.75 +- 0.05) µBq/kg  for the ﬁnal SR0 equilibrium which yields
+(covariance of -0.00142 (µBq/kg)2 between the two equilibria) a reduction factor of 1.89 +- 0.09 . This
+is compatible with the reduction factor of ~1.82 predicted by Michael Murra's RAD commissioning rate
+analysis .
+Fig. 23: S1 spectrum after 214Po cut (below naive r2 threshold) Fig. 24: S1 spectrum after 214Po cut (above naive r2 threshold)
+Fig. 25: Drift time vs. S1 AFT (by Florian Joerg) Fig. 26: Rate evolution of 222Rn chain nuclides
+Fig. 27: Rate evolution of 220Rn chain nuclides Fig. 28: Fit of eﬀective model to 222Rn rate
+--- Page 11 ---
+2026/06/07 21:09 11/11 S1-only radon event selection
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/Fig. 23: S1 spectrum after 214Po cut (below naive r2 threshold) Fig. 24: S1 spectrum after 214Po cut (above naive r2 threshold)
+Summary and outlook
+S1-only information allows to achieve S1 resolution of ~1% for S1s at O(10k PE)
+Radon rate converges to value of (1.75 +- 0.05) µBq/kg, compatible with previous reduction
+factor estimates
+S2 information still needed to determine ﬁducial mass for a given S1 AFT range
+Possible future improvements:
+Validate 214Po uniformity
+Update ﬁducial mass value and error
+Use precise conﬁdence interval for statistical error of volume correction instead of normal
+approximation and error propagation
+Account for inﬂuence of S1 peak ﬁt bounds on systematic eﬃciency correction
+uncertainty
+Analysis which uses S1-only framework to investigate charge-insensitive detector regions in
+progress (see preview note )
+From:
+https://xe1t-wiki.lngs.infn.it/  - XENON1TWiki
+Permanent link:
+https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:analysis:dominick:xenonnt_s1-only_radon_selection
+Last update: 2021/07/27 10:46

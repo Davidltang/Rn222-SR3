@@ -1,0 +1,25 @@
+# ═══════════════════════════════════════════════════════════════
+# CORRECTION FUNCTIONS
+# ═══════════════════════════════════════════════════════════════
+
+def exp_bump_model(x, a, b, c, d, e):
+    """
+    Florian's empirical model for the alpha band: area vs AFT.
+    x = AFT (area_fraction_top)
+    Returns the expected area for a given AFT value.
+    """
+    return a * np.exp((x + b) / c) * (1 - np.exp((x + b) / d)) + e
+
+def linear_func(x, a, b):
+    """Linear function: a*x + b."""
+    return a * x + b
+
+def polynomial(x, *coeffs):
+    """Polynomial: coeffs[0] + coeffs[1]*x + coeffs[2]*x² + ..."""
+    return sum(c * x**i for i, c in enumerate(coeffs))
+
+print('Correction functions defined.')
+print('  exp_bump_model(x, a,b,c,d,e) — Area vs AFT  (Correction 1)')
+print('  polynomial(x, *coeffs)       — r² vs AFT    (Correction 2)')
+print('  polynomial(x, *coeffs)       — r² vs Area   (Correction 3)')
+print('  linear_func(x, a, b)         — linear band boundaries')

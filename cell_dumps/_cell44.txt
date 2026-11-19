@@ -1,0 +1,27 @@
+---
+## Analysis Summary
+
+**Data:** S1-only alpha candidates from SR3 commissioning runs.
+
+**Pre-correction cuts:**
+1. Pulse width [40, 200] ns — S1 pulse shape selection
+2. r² < 3800 cm² — TPC wall rejection
+
+**Corrections (in order):**
+1. **Area vs AFT** — Two-step: (a) initial fit with manual exp_bump_model boundaries, (b) refine selection to vertical band (±1σ) in area_aft_corrected, re-fit centerline, normalize to AFT=0.30 → `area_aft_corrected`. Rn band tagged as vertical cut in corrected space → `in_rn_band`
+2. **AFT vs r²** — r²(AFT) degree-N polynomial fitted on Rn-band events, r² corrected to reference AFT → `r2_aft_corrected`
+3. **r² vs Area** — band selected with linear boundaries (k=-120) in r2_aft_corrected vs area_aft_corrected space, degree-5 polynomial fit (r²<60), area corrected to r²=0 → `area_2_corrected`
+
+**Post-correction cuts:**
+- AFT fiducial [0.12, 0.55] — BiPo + gas band rejection
+- FV cut [AFT 0.17–0.43, r² < 40 cm²] — tight fiducial volume
+
+**Rate measurement:**
+- Multi-Gaussian fit to AFT+r²-corrected 1D spectrum using ALL events after cuts
+- 6 peaks: Rn-222, Po-218, Rn-220, Po-216, Po-214, Po-212
+- Events counted within ±3σ window per peak
+
+**Key DataFrames:**
+- `df_cut` — after pre-correction cuts (full AFT range)
+- `d_cor` — with all correction columns (`area_aft_corrected`, `r2_aft_corrected`, `area_2_corrected`, `in_rn_band`)
+- `d_cor_aft` — after post-correction AFT+FV cuts, used for rate calculation

@@ -1,0 +1,7 @@
+*.pptx
+*.pdf
+*.pkl
+*.npz
+perbin_export/
+.aether/
+.ipynb_checkpoints/

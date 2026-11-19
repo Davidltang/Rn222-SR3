@@ -1,0 +1,125 @@
+--- Page 1 ---
+2026/06/03 08:11 1/8 XENONnT commissioning meeting– 2026-05-07
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/XENONnT commissioning meeting–
+2026-05-07
+Zoom
+Agenda
+1. News from Operations Manager + Run Coordinator (Petr)
+CRY/Accumulator:  LXe puriﬁcation started on Wed. Apr. is successfully ongoing. We reached a
+plateau in drift time (measured by PM). Q5 ﬁlter can be changed to ST707 one.
+PUR:  Recirculating and purifying GXe with 80 slpm ﬂow
+TPC:  Electrodes HV test was started on Monday May 4. TPC mode of operation (-15 kV on the
+Cathode, -2.0 kV on Gate and +3.0 kV on Anode). Measured drift time ~1.4 ms. Tests are still
+ongoing. Today -20.0 kV was reached on the Cathode (bottom stack only).
+muVeto/nVeto:  Veto PMTs are ON 24/7 since a few weeks. AmBe calibration was successfully
+performed last Thursday (Apr. 30).
+RAD:  A GXe-only operation mode can be started any time.
+DST:  System is ready to start online Kr distillation.
+1.1 PMT group request
+We are working on optimizing the HV map for the PMTs. In order to do that, we took the so-
+called HV scan measurement, and we would like to add 3 data points, namely at 1550 V, 1600
+V, and 1650 V. In accordance with the electrode group, we could do this tomorrow morning.
+Margherita, Giovanni, and the shifters will take care. The operation involves the following steps:
+Take a PMT calibration at nominal PMT voltages + 10 min of background data
+Rump at 1550 V and take a PMT calibration + 10 min of background data
+Repeat for 1600 V and 1650 V
+This operation will be done without any voltage applied to the electrode. Will we have stable
+conditions (e.g., temperature and liquid level) ?
+The ﬁrst step can be done independently by the shifters
+1.2 TPC
+7.5.2026 - cathode ramped up to -20kV without observable issues, the current ﬂuctuations seen on
+6.5.2026 were most probably caused by too conservatively set current limit on the BSM and cathode.
+--- Page 2 ---
+Last
+update:
+2026/05/08
+14:52xenon:xenonnt:dsg:nt:bi_weekly:20260507 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260507
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/06/03 08:11
+Log ﬁle of electrodes tests May 4 - 7
+2. DQM (Caio)
+Github repo: https://github.com/XENONnT/data-quality-management
+Plots saved in: “/project2/lgrandi/dataquality/plots”
+More plots in: https://xenonnt.slack.com/archives/C064APR05EH/p1778146913335169
+This week's plot:
+--- Page 3 ---
+2026/06/03 08:11 3/8 XENONnT commissioning meeting– 2026-05-07
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/
+PI (Xiaoxin)
+Photo ionization results from new electrode tests:
+--- Page 4 ---
+Last
+update:
+2026/05/08
+14:52xenon:xenonnt:dsg:nt:bi_weekly:20260507 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260507
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/06/03 08:11(PI deﬁnition: Sum of the area(PE) of all peaks after a primary S2 (Junk area), divided by the area(PE)
+of that S2)
+  run 079795: PI = 0.0056, Anode:+3.0 kV, Gate:-1.0 kV
+  run 079801: PI = 0.0134, Anode:+3.0 kV, Gate:-2.0 kV
+This is physically logical because for S2s with the same area(PE), the same number of photon are
+released. The photons create the same number of free electrons in the liquid xenon bulk. When these
+electrons are drifted to the liquid surface, for a higher extraction ﬁeld, the single electron gain and the
+extraction eﬃciency are both higher, hence these electrons give higher junk area and PI value.
+Compared to the order of magnitude of PI in SR0 (~0.01) and in SR1&SR2 (~0.1), current PI is similar
+to SR0 PI.
+Run 079801: Time proﬁle of Sum of peak area after main S2 (on average for selected S2
+events)
+Peaks stops sharply after a drift time, so it must be free electrons from the liquid xenon bulk.
+Alexis: General observations: max drift time, e-lifetime, S2-positions, (PI-rate)
+5.5.2026 Fast-Response slack  with top stack ramped up, 1.44(25) ms e-lifetime and drift time ~1.1
+ms (see linked fast-response message on slack message for details)
+3. Activities:
+--- Page 5 ---
+2026/06/03 08:11 5/8 XENONnT commissioning meeting– 2026-05-07
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/CRY/LXePUR
+e-lifetime since the start:
+e-Lifetime vs accumulator liquid level:
+It looks that the LXe inside accumulator is more dirty than LXe inTPC.
+Without purifying we cannot reach good lifetime with ST707?
+According to Alexis's work, the lifetime in TPC is also ~1.4ms.
+MV & NV
+--- Page 6 ---
+Last
+update:
+2026/05/08
+14:52xenon:xenonnt:dsg:nt:bi_weekly:20260507 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260507
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/06/03 08:11
+Current event rate: 56.9 Hz
+--- Page 7 ---
+2026/06/03 08:11 7/8 XENONnT commissioning meeting– 2026-05-07
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/
+Position of the ﬁrst peak
+from AmBe calibrationDecay constant from
+Reﬂectivity Monitor
+calibration
+Commissioning of SR3 (pure
+water)19.54 PE 48.58 ns
+First phase of SR2 (pure water) 23.14 PE 58.46 ns
+Ratio 84% 83%
+Slow Control
+Accumulator PAC code updated to support shorter valve opening resolution (0.1 s steps) and
+longer timed runs exceeding 32766 s. During commissioning on the ﬁlled detector, a bug
+caused the valve to stay open longer than intended, leading to a liquid level drop. Bug ﬁxed.
+Testing will continue tomorrow.
+CRY safety screen updated .
+--- Page 8 ---
+Last
+update:
+2026/05/08
+14:52xenon:xenonnt:dsg:nt:bi_weekly:20260507 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260507
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/06/03 08:11
+DAQ (Andrew)
+The issues I have reported upon the past few weeks have been shown to be problematic with the
+detector in S1+S2 mode. The data rates rising mean that the DAQ encounters issues with taking data.
+I must stress that these rates are not extreme, just higher than S1 only mode. We are still working on
+ﬁxing this, so please bear with us as we work with CAEN. We are also considering a planB if this is not
+possible soon. Thnk you all for your patience!
+Krypton and Radon distillation (Lutz)
+General (Abby & Masatoshi)
+Remote Shifting Discussion. Page Outline
+Schedule Building
+Moving to a special schedule wiki page
+From:
+https://xe1t-wiki.lngs.infn.it/  - XENON1TWiki
+Permanent link:
+https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260507
+Last update: 2026/05/08 14:52

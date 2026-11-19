@@ -1,0 +1,118 @@
+--- Page 1 ---
+2026/06/03 08:10 1/6 XENONnT commissioning meeting– 2026-05-21
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/XENONnT commissioning meeting–
+2026-05-21
+Zoom
+Agenda
+1. News from Operations Manager + Run Coordinator (Petr, Ekaterina)
+CRY/Accumulator : Pulsing control of LCV110 was implemented and tested. CRY_Safety screen
+has now been updated.
+LXePUR : Substitution of Q5 with ST707 is ongoing.
+TPC: Electrodes HV top stack test was performed on Tuesday, but stopped because of DAQ rate
+issues (but managed to reach +3 kV anode, - 1.0 kV gate and -1.0 kV FSR). Also on Wednesday
+PMT HV tests were performed, an issue with two digitizer boards during the noise and LED runs
+(externally triggered modes, with old and new conﬁgurations) was observed, so the HV scans
+were postponed as well. During that test the HV board of sector 19 stopped responding as well,
+but it was solved by manual powercycling.
+DAQ : The issues with boards and high rates are now under investigation, DAQ group will work
+on all related issues until the end of next week, and will require scheduling of electrodes/PMT
+tests (with Th calibration for rates) in advance.
+muVeto/nVeto : Veto PMTs are ON 24/7. Issue with veto high rate is solved. AmBe calibration
+will be performed this Friday (May 22th). GdSO salt loading is scheduled to start on Monday May
+25.
+DST: In standby, needs to be reﬁlled
+GdWTL : Plant is working in automatic mode with about 30 kg of gadolinium. A part of this is
+crystalized in a small tank and in the next 2/3 weeks will be in a soultion. The plant is working
+24/7 since Monday. Chiller is not in an automatic mode, but works 24/7 now too. Group is also
+ready to add 350 kg of gadolinium during next week (Monday afternoon - Friday morning)
+1'. Plan for next TPC commissioning schedules (AC + experts)
+During the recent TPC commissioning activities, we are encountering some diﬃculties for data
+taking (DAQ crashes, board failure,…), and DAQ team is working very hard to solve the situation
+(See Andrew's report).
+After the discussion with relevant experts, we suggest to proceed with two steps.
+Minimal condition for the commissioning test: all boards working and continuous data1.
+taking (ex. even with few seconds of deadtime due to the crash etc)
+Long-term solution for science run data taking: stable and minimizing the deadtime etc2.
+To achieve the Step1, we suggest to give a priority to DAQ team until the end of next week,
+since the investigation requires various condition of PMT and electrodes to have lower and
+higher DAQ rates.
+In case the DAQ still do not show reliable performances by the end of that period, we will revert
+the DAQ to the SR2 version.
+Once we can achieve the step1, we can restart the electrode and PMT tests. Meanwhile, DAQ
+--- Page 2 ---
+Last
+update:
+2026/05/21
+16:39xenon:xenonnt:dsg:nt:bi_weekly:20260521 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260521
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/06/03 08:10people can discuss further with CAEN and so on.
+2. DQM (Caio)
+I won't be able to join the meeting this time .
+Github repo: https://github.com/XENONnT/data-quality-management
+Plots saved in: “/project2/lgrandi/dataquality/plots”
+More plots in: https://xenonnt.slack.com/archives/C064APR05EH/p1779356121236459
+--- Page 3 ---
+2026/06/03 08:10 3/6 XENONnT commissioning meeting– 2026-05-21
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/
+Fig. 1: This week's DQM plot
+3. Activities:
+--- Page 4 ---
+Last
+update:
+2026/05/21
+16:39xenon:xenonnt:dsg:nt:bi_weekly:20260521 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260521
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/06/03 08:10CRY/LXePUR
+LXePUR
+Not enough Q5 material in hand to reﬁll the Q5 puriﬁer with new pellets
+Ordered new batch of Q5 material
+Q5 puriﬁer deinstalled from LXePUR system, second St707 puriﬁer installed
+Second St707 puriﬁer being regenerated today
+Currently electron lifetime improvement compatible with a passivated puriﬁer
+1297 μ s to 1460 μs in 3 days → 23.9 d time constant, GXePUR at 70-18 = 52 slpm is
+≈20 d
+Accumulator
+Received quote for very low Cv valve with enough rangeability
+Lead time is 12 weeks, inquired if this can be shortened with a rush order
+Alternative level control method code implemented in PAC
+Ladder logic tested and works correctly
+Schedule a time to do actual level control tests, need ≈2 days
+MV & NV
+Smooth data taking with stable rate
+Current event rate: 56.5 Hz
+Second AmBe calibration shows a consistent signal, and so light collection eﬃciency
+--- Page 5 ---
+2026/06/03 08:10 5/6 XENONnT commissioning meeting– 2026-05-21
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/
+Plan for GdSO insertion in the WT
+Next week we'll start the GdSO insertion onsite.
+The plan is to proceed up to 500 ppm (350 kg, including those already in the GdPlant from the
+GdRecovery commissioning)
+After that, we'll stop waiting for uniform concentration (about two weeks), monitoring the LCE
+Right after, we'll proceed with the GdSO insertion up to the nominal concentration
+Slow Control
+DAQ (Andrew)
+We are testing the new implementation of a mode of the data taking software which handles the
+errors more gracefully. The aim here is to prevent crashes which leads to the biggest problems. We
+need some more information to check the impementation is working and then will stress test the
+system tomorrow with electrodes. At the moment the timing is a little oﬀ on the 'tag' which could be
+used to veto the bad packets but we think we understand the reason why. This is a lower order of
+problem. At the moment we trust it to a few seconds.
+A second issue involving two boards having communication issues also happened. We ran some tests
+and we saw nothing that was strange but occasionally had issues with the arming. We re-ﬂashed the
+ﬁrmware and tried again. At the moment these boards are running, but if there are more problems
+can replace on Monday.
+Tomorrow: AM Electrode tests; PM PMT HV scan Weekend: Longer term monitoring Monday: Potential
+time intervention Tuesday onwards: TBD
+Krypton and Radon distillation (Lutz)
+--- Page 6 ---
+Last
+update:
+2026/05/21
+16:39xenon:xenonnt:dsg:nt:bi_weekly:20260521 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260521
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/06/03 08:10General (Abby & Masatoshi)
+Schedule Building
+Moving to a special schedule wiki page
+From:
+https://xe1t-wiki.lngs.infn.it/  - XENON1TWiki
+Permanent link:
+https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260521
+Last update: 2026/05/21 16:39

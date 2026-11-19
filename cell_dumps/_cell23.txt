@@ -1,0 +1,41 @@
+# ═══════════════════════════════════════════════════════════════
+# CORRECTION 2 DIAGNOSTIC: r2_aft_corrected vs AFT
+# ═══════════════════════════════════════════════════════════════
+# Verify that the r² correction removes AFT dependence.
+
+fig, axes = plt.subplots(1, 2, figsize=(14, 5.5))
+
+# Left: BEFORE — raw r² vs AFT
+ax = axes[0]
+h = ax.hist2d(d_cor['area_fraction_top'], d_cor['r2'],
+              bins=[150, 150],
+              range=[[0, 0.7], [0, 200]],
+              cmin=1, norm=matplotlib.colors.LogNorm())
+plt.colorbar(h[3], ax=ax, label='Counts')
+ax.set_xlabel('Area Fraction Top')
+ax.set_ylabel('r² [cm²]')
+ax.set_title('BEFORE Correction: r² vs AFT')
+ax.grid(True, alpha=0.2)
+
+# Right: AFTER — r2_aft_corrected vs AFT
+ax = axes[1]
+h = ax.hist2d(d_cor['area_fraction_top'], d_cor['r2_aft_corrected'],
+              bins=[150, 150],
+              range=[[0, 0.7], [0, 200]],
+              cmin=1, norm=matplotlib.colors.LogNorm())
+plt.colorbar(h[3], ax=ax, label='Counts')
+ax.axhline(y=r2_at_ref_aft, color='red', ls='--', lw=2,
+           label=f'Ref r² at AFT={aft_ref} = {r2_at_ref_aft:.0f} cm²')
+ax.set_xlabel('Area Fraction Top')
+ax.set_ylabel('r2_aft_corrected [cm²]')
+ax.set_title('AFTER Correction: r2_aft_corrected vs AFT')
+ax.legend(fontsize=9)
+ax.grid(True, alpha=0.2)
+
+safe_tight(fig)
+plt.show()
+
+print(f'Correction 2 diagnostic:')
+print(f'  Raw r² mean: {d_cor["r2"].mean():.1f} cm²')
+print(f'  r2_aft_corrected mean: {d_cor["r2_aft_corrected"].mean():.1f} cm²')
+print(f'  Reference r² at AFT={aft_ref}: {r2_at_ref_aft:.0f} cm²')

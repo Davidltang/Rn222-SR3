@@ -1,0 +1,2 @@
+ok = df_fits[df_fits["success"]]["run"].values
+ok

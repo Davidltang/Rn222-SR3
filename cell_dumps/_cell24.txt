@@ -1,0 +1,9 @@
+### Correction 3: r² vs Area
+
+Fit `area_aft_corrected` vs `r2_aft_corrected`. Select a band with **linear boundaries**
+(area = k·r² + intercept, k = -0.2), fit degree-10 polynomial to the band centerline,
+then correct area against r² → `area_2_corrected`.
+
+X-axis: `r2_aft_corrected` (from Correction 2), Y-axis: `area_aft_corrected` (from Correction 1).
+
+Fit range: r2_aft_corrected ∈ [0, 100] cm², area ∈ [0, 1e5] PE.

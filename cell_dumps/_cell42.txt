@@ -1,0 +1,1 @@
+if len(fail): plot_run_fit(np.random.choice(fail))

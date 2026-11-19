@@ -1,0 +1,107 @@
+--- Page 1 ---
+2026/07/25 20:07 1/6 XENONnT commissioning meeting– 2026-06-04
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/XENONnT commissioning meeting–
+2026-06-04
+Zoom
+Agenda
+1. News from Operations Manager + Run Coordinator (Petr, Ekaterina)
+CRY: Q5 is passing customs right now, operations planned on next week.
+TPC: Test (for DAQ) with electrodes was performed on June 1st (BS=-1.6kV, Cathode=-4.0kV,
+topFSR=-2kV, Gate=-2kV, Anode=+3kV, TS=+700V), weird “warm spot” was observed, possible
+reasons are under investigation.
+DAQ : Tests without electrodes but with LED imitating load were performed on Tuesday (thanks a lot
+to heroic experts and heroic shifters who were 12h underground!). The Original issue with corrupted
+data was solved (so no CAEN people are needed there for now), other issues are being addressed by
+not less heroic DAQ team 24/7. Also possible theory about correlation with muon rate is under
+investigation right now Search for crossing muons at the time of DAQ crashes .
+muVeto/nVeto : Veto PMTs are ON 24/7. AmBe calibration was performed today (June 4th).
+DST: Bottle is being cooled oﬀ right now, getter is on, operation is ongoing
+GdWTL : Total of about 350 kg of gadolinium salt was inserted into the water tank (WT) last week,
+lower rate during AmBe calibration is already visible.
+2. DQM (Caio)
+Github repo: https://github.com/XENONnT/data-quality-management
+Plots saved in: “/project2/lgrandi/dataquality/plots”
+More plots (7 days and 30 days plots) in:
+https://xenonnt.slack.com/archives/C064APR05EH/p1780550545080839
+--- Page 2 ---
+Last
+update:
+2026/06/04
+16:30xenon:xenonnt:dsg:nt:bi_weekly:20260604 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260604
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/07/25 20:07
+Fig. 1: This week's DQM plot
+--- Page 3 ---
+2026/07/25 20:07 3/6 XENONnT commissioning meeting– 2026-06-04
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/3. Activities:
+CRY/LXePUR
+LXePUR
+New Q5 material was shipped Monday, released by customs yesterday
+Package is in Avezzano, delivery tomorrow (or Monday)
+Plan on reﬁlling / regenerating the Q5 puriﬁer vessel Monday (Tuesday)
+Switch to Q5 puriﬁer could occur next Thursday (Friday)
+Ideal would be to empty the St707 puriﬁer currently in use before that
+This will lead to liquid level changes so S2 operation not possible
+Ok for next Wednesday for example?
+LXe Accumulator
+Thermomess started fabrication of the very low Cv control valve body/plug last Friday
+Delivery expectation is 2-3 weeks
+Will update once the installation date at LNGS can be conﬁrmed
+MV & NV
+
+--- Page 4 ---
+Last
+update:
+2026/06/04
+16:30xenon:xenonnt:dsg:nt:bi_weekly:20260604 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260604
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/07/25 20:07
+AmBe calibration - position Bottom CW6d
+DateTotal bkg-subtracted rate
+[Hz]Position of the ﬁrst
+peak (H neutron
+capture) [PE]Position of the second peak
+(C ﬁrst state de-excitation)
+[PE]
+April 30 212.7 +- 0.5 19.54 +- 0.09 64.21 +- 0.15
+May 14 211.7 +- 0.5 19.48 +- 0.11 64.9 +- 0.2
+May 22 209.9 +- 0.5 19.71 +- 0.09 65.4 +- 0.2
+May 28 210.4 +- 0.5 19.56 +- 0.10 64.7 +- 0.2
+--- Page 5 ---
+2026/07/25 20:07 5/6 XENONnT commissioning meeting– 2026-06-04
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/
+Slow Control (Mahmoud)
+SCADA crash on 28-May: the incident was in investigated. In short: one of the processes that
+SCADA uses was shut down by Windows, this lead to the failure of other dependent processes
+on SCADA leading to the crash, SCADA2 (redundancy) caught up smoothly after that. It wasn't
+a hardware failure . For more technical explanation .
+DAQ (Andrew)
+The original issue we set out to resolve is now largely solved. We are no longer seeing
+corrupted packets!
+Unfortunately this issue masked an issue with a selection of boards associated with one of the
+VME crates. New power supply ordered and we hope to install tomorrow or Monday. We have
+removed boards from one VME crate and disabled all high energy boards to lower load on the
+crate. Please use the tpc_bkg_low_energy mode for now. This has all PMTs.
+Separate issue identiﬁed with the LED mode where one (apparently) random board is not
+triggering.
+Wanting to do an electrodes test, but limited currently by availability of people
+We should also think about checking the total power consumption for the DAQ from the super
+UPS
+--- Page 6 ---
+Last
+update:
+2026/06/04
+16:30xenon:xenonnt:dsg:nt:bi_weekly:20260604 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260604
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/07/25 20:07Krypton and Radon distillation (Lutz)
+Helium of the DST (top) condenser cold head was re-ﬁlled but cooling power remain at 150W
+around -80°C in vacuum. However, this strengthens the conﬁdence that the cold head will
+survive until after the online distillation.
+DST is being ﬁlled from bottle rack (today/tomorrow)
+Early next week we plan to ﬁll DST a couple of times and release the cleaned xenon to the TPC
+in order to empty the bottle rack recuperation bottles as we need every kg of xenon that we can
+get for the upcoming SR. This will be done in batches to ensure cleanliness.
+Schedule Building
+Moving to a special schedule wiki page
+From:
+https://xe1t-wiki.lngs.infn.it/  - XENON1TWiki
+Permanent link:
+https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260604
+Last update: 2026/06/04 16:30

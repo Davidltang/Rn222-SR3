@@ -1,0 +1,151 @@
+--- Page 1 ---
+2026/06/03 08:10 1/6 XENONnT commissioning meeting– 2026-05-28
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/XENONnT commissioning meeting–
+2026-05-28
+Zoom
+Agenda
+1. News from Operations Manager + Run Coordinator (Petr, Ekaterina)
+CRY/Accumulator : CRY-water SCADA screen has been updated: stopwatches for the live runtime of
+the cold water loop pumps integration has been added.
+TPC: Kind of electrodes HV top stack test was performed yesterday (during DAQ tests). Increased
+voltages reached: Cathode=-4.0kV, BS=-1.6kV, topFSR=-2kV, Gate=-2kV, Anode=+3kV, TS=+700V.
+Today there were some SCADA issues (SCADA1 crashed, causing a switch to SCADA2 and then back
+to SCADA1). Issue is currently under control and investigation.
+DAQ : The issues are under investigation, please see report by DAQ team.
+muVeto/nVeto : Veto PMTs are ON 24/7. AmBe calibration was performed today (May 28th).
+DST: In standby, please see discussion of plans below
+GdWTL : Total of about 350 kg of gadolinium salt was inserted into the water tank (WT).
+2. DQM (Caio)
+Github repo: https://github.com/XENONnT/data-quality-management
+Plots saved in: “/project2/lgrandi/dataquality/plots”
+More plots in: https://xenonnt.slack.com/archives/C064APR05EH/p1779939309264839
+--- Page 2 ---
+Last
+update:
+2026/05/28
+16:24xenon:xenonnt:dsg:nt:bi_weekly:20260528 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260528
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/06/03 08:10
+Fig. 1: This week's DQM plot
+--- Page 3 ---
+2026/06/03 08:10 3/6 XENONnT commissioning meeting– 2026-05-28
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/3. Activities:
+CRY/LXePUR
+LXePUR
+New Q5 material will be shipped to LNGS tomorrow
+Q5 puriﬁer reﬁll/regeneration could happen end of next week
+CRY (accumulator)
+JM contacted valve fabricator Thermomess and they are able to make a new valve seat
+(body) and plug with the ﬂow coeﬃcient we need (Cv=0.0043 at speciﬁed conditions) and
+with enough range for control
+Delivery is ≈2-3 weeks, cost is ≈50% of the cost of the new valve previously identiﬁed
+We could test the alternative (temporary patch) level control mode
+Not preferred though given the disruption, uncertainty on outcome, and much more
+acceptable lead time for the replacement valve
+MV & NV
+Gadolinium Insertion Operations (Filippo) : Operations started on Monday 25/05 afternoon
+and lasted until today 28/05 at 12:00 LNGS time.
+A total of about 350 kg of gadolinium salt was inserted into the water tank (WT).
+The solution was injected into the WT through the pipe at the bottom of the muon veto (MV).
+During nighttime, the Gd-Water circulation loop was activated in automatic mode to help mixing
+inside the WT. This loop will continue to operate in the coming days to ensure uniform
+gadolinium diﬀusion in the WT volume.
+See a detailed log of operations here:  Gadolinium Loading Operations – Daily Log .
+Each day we performed a conductivity measurement using samples extracted from three points
+of the WT:
+Low (L) at the bottom of the MV.
+Medium (M) at the bottom of the NV.
+High (H): at the top of the WT.
+These measurement will continue daily, each week a conductivity measurement using the
+ICP-MS will be performed.
+The results will be posted on the following table: ⚡ CONDUCTIVITY DATA IN THE WATER
+TANK - GADOLINIUM MONITORING .
+The following plot shows an example of the gadolinium concentration at the output of the
+mixing tank, data taken from 14:00 of 27/05/2026 to 14:00 of 28/05/2026:
+
+--- Page 4 ---
+Last
+update:
+2026/05/28
+16:24xenon:xenonnt:dsg:nt:bi_weekly:20260528 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260528
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/06/03 08:10The data rate in the NV PMTs is still stable, we expect the Gd-concentrate solution to reach the NV in
+a few days
+Slow Control
+Incident on 28/5/2026, starting at 13:36:38:
+Earlier today SCADA1 appears to have temporarily frozen/​crashed,​ causing an automatic failover to
+the redundant SCADA2 server and later a switch back once SCADA1 recovered (14:46). At the
+moment there is no indication that detector/​PAC operation itself was compromised. The main issue
+was alarm ﬂooding caused by repeated/​stale alarms during the redundancy transition. The positive
+side is that the redundancy switch itself appears to have worked correctly. Without the stale/“​always-
+on”​ alarms, the transition would likely have been almost completely transparent operationally.
+Short term plan (today): Some remaining issues still require a SCADA restart and/or EGD restart
+A SCADA restart will retrigger the stale alarms again (temporarily disabling notiﬁcations on the
+DB side can minimize the pain to shifters)
+Another option is to ﬁrst try an EGD restart, and only do a SCADA restart if still needed
+Medium term (next week):
+It is high priority to get rid of these stale alarms by disabling/​ﬁxing them on the PAC side That means
+updating PAC code and rebuilding EGD PAC-by-PAC I will prepare a list and discuss it on the Slack
+channel, including which alarms should remain as is, inhibited, or reduced in severity.
+DAQ (Andrew)
+Very busy week:
+Felix has implemented a version of the readout software that handles some of the corrupted
+packets with a tag. This is still being tested. Enables us to learn and understand more of what is
+happening with the system in the moments immediately after the ﬁrst bad data.
+Over the weekend I implemented a version to try and get the readout to happen faster. We
+believed this was linked to the problem. This introduced other issues with synchronisation.
+--- Page 5 ---
+2026/06/03 08:10 5/6 XENONnT commissioning meeting– 2026-05-28
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/Yesterday we tried adding delays though to the original version and this had limited impact.
+Seems to be bad data arriving that causes the hardware to have a problem.
+Learning a lot about how things look and what works and what is not. Still communicating
+through CAEN.
+Repair of VME crate - causing issues on multiple boards.
+Beginning to implement a quicker reversion process. Aim to get it so that we could swap in
+<30mins. Therefore we could in theory test the system with both versions easily going forward.
+This will take about a week to implement. All of this work would be needed for the reversion
+anyway.
+Krypton and Radon distillation (Lutz)
+Bring DST into operational state1.
+As reported, cold heads are operational again.
+We observed if the cooling power is stable over the past days and we achieve stable
+140W with the main cold head (Usually 250W for new device)
+Cooling power is comparable to before the cooling water outage - However, we
+considering to renew the helium and try to improve performance with it
+Start of online distillation2.
+Current plan: 2026 - Online distillation with KrDST
+Redirect the CRY ﬂow of FCV101+102+103+105 to DST
+Inject distilled xenon into PUR inlet
+Keep PUR running for TPC/Bell puriﬁcation (~50 slpm)
+Don't use RAD to make the process more stable for the moment
+When is a good time to start?
+Proposal for next TPC commissioning schedules
+As decided last week, we are focusing on ﬁxing the DAQ issue until the end of this week. Depending
+on the status, we have two options:
+Option A: DAQ is ﬁxed during this week
+Move on with PMTs and electrodes test for let's say 7 working days (or more if needed to check
+with electrodes expert)
+And then we allocate CRYO/PUR operation weeks. current list of operations :
+LXePUR Filter switch to Q5
+Changing the accumulator operation mode (if needed)
+Replacing the valve of the accumulator
+(if it doesn't give any impacts to the system, can be done in anytime)
+Kr Distillation
+Note: of course if there's any urgent operations to be done as soon as possible we can allocate
+the slot.
+Option B: DAQ need to be reverted back to old condition
+--- Page 6 ---
+Last
+update:
+2026/05/28
+16:24xenon:xenonnt:dsg:nt:bi_weekly:20260528 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260528
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/06/03 08:10We will have few days of down time early next week for hardware preparation (cabling, test etc)
+We can use this time for any CRY/PUR/DST operations which is ready.
+Then proceed with electrode test while operations listed above is being prepared (1-2 weeks?)
+After that, CRY/PUR/DST operation week as like option A
+General (Abby & Masatoshi)
+Schedule Building
+Moving to a special schedule wiki page
+From:
+https://xe1t-wiki.lngs.infn.it/  - XENON1TWiki
+Permanent link:
+https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260528
+Last update: 2026/05/28 16:24

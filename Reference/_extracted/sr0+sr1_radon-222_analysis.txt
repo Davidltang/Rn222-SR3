@@ -1,0 +1,975 @@
+--- Page 1 ---
+2026/05/07 18:18 1/31 SR0+SR1 Radon-222 Analysis
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/SR0+SR1 Radon-222 Analysis
+Ting, ytlin@mpi-hd.mpg.de
+update record
+Reviewer Comments
+Comments from Michael Murra
+Comments from Shingo Kazama
+Outline:
+Overview: Why Pb214 rate, and why we can estimate it using Rn222
+SR1 S1S2 Alpha Analysis: How to get the Rn222 rate using both S1 and S2 signal in SR1
+SR1 S1only Alpha Analysis: How to get the Rn222 rate using S1only signal in SR1
+SR0 Alpha Analysis: S1S2 and S1only analysis but for SR0
+Alpha Result Comparisons: How to combine S1S2 and S1only rate to get full alpha systematics
+Low ER to Alpha Ratio: How to convert Rn222 rate to lowER rate
+Conversion Factors: How to convert lowER rate to Pb214 rate
+Results: Pb214 rate summary
+Overview
+To measure the solar-pp neutrino signal in the electron recoil (ER) region of interest (ROI), whose
+signal model is shown in Fig.0.0 and will be updated by the theorists (see slides ), we would need to
+ﬁgure out the background contribution in the ER region. The primary background contributors are
+beta-emitters such as Pb214, Kr85, and Pb212 because their spectra are ﬂat in the ROI making these
+backgrounds diﬃcult to distinguish from the signal. A good estimation on these backgrounds is
+therefore critical if we want to detect any signals in the ER region.
+This wiki-page focuses on Pb214 because as we can see from Fig.0.1b, it is the main background
+contributor rate-wise. As it turns out, Pb214 is one of the decay daughter from the Rn222 decay
+chain, which also include several mono-energetic alpha-emitters in the high energy region as shown
+in Fig.0.1a. Since these beta-emitters and alpha-emitters originate from the same chain, these decays
+are physically one-to-one corresponding to each other up to, for instance, the plate-out contribution.
+The idea of the plate-out is such that only Rn222 is the noble gas and so can freely travel to the FV;
+however, once Rn222 decays, the daughters are no long noble gas and tends to be lost to the
+wall/electrodes. Assuming the plate out eﬀect is consistent within the experiment, we can use the
+Pb214/alpha rate ratio to set a strict constraints on the Pb214 rate. The alpha spectra are shown in
+Fig.0.2 with the two main alpha analysis methods to be covered in this note.
+--- Page 2 ---
+Last update: 2026/02/10 23:47 xenon:xenonnt:lin:sr1:240717 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:lin:sr1:240717
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/05/07 18:18
+Fig.0.0. Preliminary solar neutrino signal model from the theory.
+Fig.0.1a: Rn222 and Rn220 decay chain with alpha/beta energies Fig.0.1b: reference low ER region spectrum component from Giovanni's slides .
+Fig.0.2a: reference alpha spectrum using SR1 science  data with the S1S2 method, the
+rough location of each peaks is shown shown by the vertical dashed linesFig.0.2b: reference alpha spectrum using SR1 science  data with the S1only method, the
+rough location of each peaks is shown by the vertical dashed line
+S1S2 Alpha Analysis
+The S1S2 alpha analysis uses both S1 and S2. For this method, the mono-energetic alpha peaks are
+shown in Fig.0.2a include Rn222-chain: Rn222 and Po218, while Rn220-chain: Rn220, Bi212, and
+Po216. The S1S2 method has a diﬃcult time accessing the BiPo events such as Po214 and Po212,
+mostly because of the possibility of multiple gammas emitted after a BiPo event. These gammas
+make the S1S2 position construction inaccurate ( note) because it's diﬃcult to ﬁgure out which S2
+peak the alpha belongs to. Therefore, instead of accurate determine the BiPo rates, the S1S2 analysis
+focus on removing the BiPo leakage into other alpha peaks. On the other hand, Po210 is isolated
+because of Pb210's long lifetime, meaning that it shouldn't be present in the ﬁducial volume. Finally,
+because Po218 and Bi212 are too closed to each other in energy, their peaks can be diﬃcult to
+separate. For this reason, this analysis works the best when either Rn222 or Rn220 is dominant.
+During the Rn222 calibration and typical background runs, Rn222 will be dominant and will be the
+main showcase for this work. Only during the Rn220 calibration would the Rn220 be dominant. The
+--- Page 3 ---
+2026/05/07 18:18 3/31 SR0+SR1 Radon-222 Analysis
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/analysis will be identical for the 2 cases, except on the ﬁne tuned initial ﬁt parameter values used in
+the multipeak ﬁt.
+This analysis uses the S1S2 event_info  level data. Note that, however, the alpha energy range
+selection uses only the S1 information. The S2 information is primarily used for event position
+reconstruction such that a ﬁducial volume (FV) can be applied.
+Environment: oﬄine V16
+Environment: XENONnT_el7.sr01_solar_pp.2
+Host midway3-0560.rcc.local
+ module version
+path  git
+ python  3.9.23
+/opt/XENONnT/anaconda/envs/XENONnT_el7.sr01_solar_pp.2/bin/python None
+  strax   1.6.5
+/opt/XENONnT/anaconda/envs/XENONnT_el7.sr01_solar_pp.2/lib/python3.9/site-
+packages/strax None
+straxen   2.2.7
+/opt/XENONnT/anaconda/envs/XENONnT_el7.sr01_solar_pp.2/lib/python3.9/site-
+packages/straxen None
+  cutax  1.19.6
+/project2/lgrandi/xenonnt/dali/lgrandi/xenonnt/software/cutax/solarpp-
+v2.0.0/cutax None
+ xedocs  0.2.31
+/opt/XENONnT/anaconda/envs/XENONnT_el7.sr01_solar_pp.2/lib/python3.9/site-
+packages/xedocs None
+ rframe  0.2.21
+/opt/XENONnT/anaconda/envs/XENONnT_el7.sr01_solar_pp.2/lib/python3.9/site-
+packages/rframe None
+st.storage [straxen.storage.rundb.RunDB (readonly: True),
+strax.storage.files.DataDirectory (readonly: True, path:
+/dali/lgrandi/xenonnt/raw, take_only: ('raw_records', 'raw_records_he',
+'raw_records_aqmon', 'raw_records_nv', 'raw_records_aqmon_nv',
+'raw_records_aux_mv', 'raw_records_mv')), strax.storage.files.DataDirectory
+(readonly: True, path: /dali/lgrandi/xenonnt/processed),
+strax.storage.files.DataDirectory (readonly: True, path:
+/project2/lgrandi/xenonnt/processed), strax.storage.files.DataDirectory
+(readonly: True, path: /project/lgrandi/xenonnt/processed),
+strax.storage.files.DataDirectory (path:
+/scratch/midway2/lin194/strax_data),
+straxen.storage.rucio_local.RucioLocalFrontend (readonly: True, path:
+/project/lgrandi/rucio), strax.storage.files.DataDirectory (readonly: True,
+path: /project/lgrandi/pp_neutrino/bkg/bkg_sr1),
+strax.storage.files.DataDirectory (readonly: True, path:
+/project/lgrandi/pp_neutrino/rn220/rn220_sr1),
+strax.storage.files.DataDirectory (readonly: True, path:
+/project/lgrandi/pp_neutrino/rn222/rn222_sr1),
+strax.storage.files.DataDirectory (readonly: True, path:
+--- Page 4 ---
+Last update: 2026/02/10 23:47 xenon:xenonnt:lin:sr1:240717 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:lin:sr1:240717
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/05/07 18:18/project/lgrandi/pp_neutrino/strax_data_for_ting/bkg_sr1)]
+lineage: 00-event_info-ebtai5l2hx
+Event selection
+st = cutax.xenonnt_offline(analysis="pp_sr1",
+_rucio_local_path="/project/lgrandi/rucio", include_rucio_local=true,
+_auto_append_rucio_local=false, readonly=true)
+st.storage += [
+    strax.DataDirectory('/project/lgrandi/pp_neutrino/bkg/bkg_sr1'),
+    strax.DataDirectory('/project/lgrandi/pp_neutrino/rn220/rn220_sr1'),
+    strax.DataDirectory('/project/lgrandi/pp_neutrino/rn222/rn222_sr1'),
+strax.DataDirectory('/project/lgrandi/pp_neutrino/strax_data_for_ting/bkg_sr
+1'),
+]
+run_mode = ["tpc_bkg", "background_tpc_mv", "background_tpc_nv",
+"background_linked"],
+include_tags = ["_sr1a", "_sr1b", "_wimp"],
+exclude_tags = ["hot_spot", "hotspot_candidate"]
+targets = ["event_info", "cuts_minimal", "cut_s1_area_hard_high_thres"]
+The run numbers can be found in this note.
+Link to the code
+The main code follows radon_analysis_v2_s1s2.py  from github .
+The relevant conﬁguration ﬁles are:
+configuration_files/radon_analysis_config_v2_s1s2_sr1_offlineV16_rn222cali.j
+son
+configuration_files/radon_analysis_config_v2_s1s2_sr1_offlineV16.json
+configuration_files/radon_analysis_config_v2_s1s2_sr1_offlineV16.py
+And runs with:
+python radon_analysis_v2_s1s2.py submit --config_file
+configuration_files/radon_analysis_config_v2_s1s2_sr1_offlineV16.json
+S1S2 methods: cuts to select S1S2 non-BiPo alpha events
+For the studies on the cuts, please refer to the following note. To select the alphas, the cuts used are,
+selection_str = ['cuts_minimal', 'cut_s1_area_hard_high_thres']
+--- Page 5 ---
+2026/05/07 18:18 5/31 SR0+SR1 Radon-222 Analysis
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/where 'cut_s1_area_hard_high_thres' is a cut to remove all events with S1 < 2.0E4PE  since the
+focus is the alphas.
+The followed up cuts are indicated the the orange curves in Fig.1.1, which include:
+to remove gammas: (s2_area < 3.0E3*np.power(10, s1_area/2.0E4)) & (s2_area
+< 1.2E4)
+to remove events without physical S1-S2 pair: (polyFunc(s1_area_fraction_top,
+[-0.05, 2.0E6, -4.0e6, 0.0]) < drift_time) & (drift_time <
+polyFunc(s1_area_fraction_top, [0.18, 2.0E6, -4.0e6, 0.0])) , where
+polyFunc(x, [a, b, c, d]) = b*(X-a) + c*np.power(X-a, 2) + d*np.power(X-a,
+3)
+to remove BiPos ( detail ): 0.12 < s1_area_fraction_top
+to remove unphysical events: drift_time < polyFunc(s2_range_50p_area, [-2.0E3,
+-0.5E5, 0.0, 0.025]) . Notice the upper bound orange curve is NOT applied to cut out the
+large S2 width events.
+odd multi-scatter events ( detail ): np.logical_not( (6.0E4 < s2_area) & (s2_area <
+2.0E6) & (0.0 < s1_corrF) & (s1_corrF < 5.9E4) & (np.isnan(alt_s1_area)
+== False) & (70.0 < alt_s1_area) )
+ﬁducial volume: (-120.0 < z) & (z < -10.0) & (np.power(x, 2) + np.power(y,
+2) < 3.8E3)
+These cuts should have negligible eﬃciency lost for the non-BiPo events as shown in here. On the
+other hand, there would be deadtime contribution coming from cuts_minimal .
+--- Page 6 ---
+Last update: 2026/02/10 23:47 xenon:xenonnt:lin:sr1:240717 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:lin:sr1:240717
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/05/07 18:18
+Fig.1.1: SR1 Rn222 calibration events after cuts
+S1S2 methods: s1_area correction for S1S2 non-BiPo alpha events
+The s1_area  corrections is done with the Rn222 data. The correction shows slightly better
+performance in removing BiPo than cs1 (see plot) and will be unaﬀected by the LY correction. To do
+this correction, ﬁrst apply all the cuts in the previous subsection, and ﬁt the following the empirical
+function to s1_area  ,
+s1_area1 = a*np.exp(-(b-s1_area_fraction_top)/c)*(1.0-np.exp(-(b-
+s1_area_fraction_top)/c)) + d,
+where a, b, c, d  are ﬁt parameters. The ﬁtted curve is shown as the solid orange curve in Fig.1.2a
+middle-left plot. The dash orange borders are set manually to remove the events outside the borders
+and so improve the ﬁt.
+s1_corr1 = s1_area1/(A*np.exp(-(B-s1_area_fraction_top)/C)*(1.0-np.exp(-(B-
+s1_area_fraction_top)/C)) + D)
+for each events, where A, B, C, D  are now the ﬁtted parameters. Note, the same ﬁt is done with
+drift_time  instead of s1_area_fraction_top  as shown in Fig.1.2a lower-left plot, but only one
+such correction is needed.
+Second correction is ﬁt the linear function for s1_corr1 ,
+--- Page 7 ---
+2026/05/07 18:18 7/31 SR0+SR1 Radon-222 Analysis
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/s1_corr1 = a*(np.power(x, 2) + np.power(y, 2)) + b,
+where a, b  are ﬁt parameters. The ﬁtted curve is shown as the solid orange curve in Fig.1.2b
+bottom-right plot. Again, the dash orange borders are set manually to remove the events outside the
+borders and so improve the ﬁt. Then one,
+s1_corrF = s1_corr1/(A*(np.power(x, 2) + np.power(y, 2)) + B),
+where A, B  are now the ﬁtted parameters.
+Fig.1.2a: SR1 Rn222 calibration events with the s1_corr1 Fig.1.2b: SR1 Rn222 calibration events with the s1_corrF
+The s1_corrF  is shown in Fig.1.3. Notice that this correction is meant to project alpha into gaussians
+in s1_corrF . Then isolating each of these peaks would given us each peaks of the diﬀerent isotopes.
+According to link, s1_corrF  has a smaller BiPo spread than cS1, so that's why s1_corrF  is used.
+S1S2 methods: multipeak ﬁtting
+Fig.1.3a: SR1 science  events with cuts applied Fig.1.3b: SR1 science  events with s1_corrF
+With the cuts and s1_corrF , events for runs within 1 day are grouped together into run chunks. The
+run chunk for the multipeak analysis is determined in the following way: if the diﬀerence between the
+--- Page 8 ---
+Last update: 2026/02/10 23:47 xenon:xenonnt:lin:sr1:240717 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:lin:sr1:240717
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/05/07 18:18start-time of a run and the start-time of the ﬁrst run of the run chunk is smaller than a certain
+threshold (1 day in this case), then they belong to the same run chunk. Also runs with diﬀerent run
+modes (i.e. science versus calibration) cannot be inside the same run chunk.
+Each run chunk goes through the multipeak gaussian ﬁt as shown in Fig.1.4 top plot, whose peak
+widths are linked by the square-root of the mean. The ﬁt ranges are manually optimize using Rn222
+calibration data. However, due to the LY variation in time, these ﬁt ranges are scaled by a single
+parameter, say a, with a step of 0.02 in [0.5, 1.5]. To centralize the ﬁt range to the peaks, this a is
+determined for every run chunk by maximizing the event count within these scaled ﬁt ranges. For this
+reason, the gaps in the ﬁt ranges are important for the method to work.
+The choice of 1 day in run chunk/time-bin is to be large enough to have enough statistics such that
+Rn220 in science runs can just be picked up by the multipeak ﬁt, but small enough such that time
+variation of the LY broadening the peaks is not impactful.
+The middle and bottom plots of Fig.1.4 is not very relevant for rate, but they show the light/charge
+yield (LCY) to showcase the validity of the ﬁts. The LCY are extracted from cS1 and cS2 of the
+isolated Rn222 and Po218 peak events (within 3 sigma of the gaussian ﬁt). This works for all the runs
+except for Rn220 calibration due to peak dominance and neutron calibration due to high energy veto.
+Fig.1.4: multipeak ﬁt of a speciﬁc run chunk
+Counts within [mean-3sigma, mean+3sigma] are used for rate evaluation (in uBq/kg) instead of the
+ﬁtted amplitudes. Except for Rn220, only [mean, mean+3sigma] range is applied for the counting.
+The rate is then corrected by 1/gaus(mean-3sigma, mean+3sigma) . The errors from the ﬁt is
+then propagated to this correction term. If the peaks are badly gaussian, the error bar on the
+--- Page 9 ---
+2026/05/07 18:18 9/31 SR0+SR1 Radon-222 Analysis
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/correction term will be large. Finally, since Po218 and Rn220 are close together in energy, their
+“leakage” between each other are subtracted according to the ﬁtted gaussian, with the error
+propagate again from the ﬁt error. The details can be found in code . Notice however, Bi212 trace in
+Po218, despite negligible, is not subtracted out.
+S1only Alpha Analysis
+The S1only alpha analysis skips the S2 information, whose mono-energetic alpha peaks are shown in
+Fig.0.2b. The advantage of the S1only alpha analysis is that it has a handle to the BiPo events
+because BiPo primarily aﬀects the S2 waveforms. This means that the rate of Po214 from the Rn222-
+chain can also be tracked. This is especially helpful because Po214 comes after Pb214, which should
+in principle be more aﬀected by the plate-out. In this way, we can have a rough but conservative
+estimate of systematics coming from the plate-out eﬀects, between SR0 and SR1 say. The S1only
+analysis has another advantage of being able to analyze the alpha data when the anode is oﬀ.
+However, this ﬂexibility is more an advantage for monitoring than for science runs.
+The S1only alpha analysis utilize the S1_cnn  position reconstruction that Matteo developed. This
+position reconstruction performs better than naive S1 PMT pattern for XY and S1_AFT for Z. However,
+in order to estimate the FV accurately, we would still need to rely on the matching between S1only to
+S1S2 events. The disadvantage of the S1only is that the FV cut is less powerful than that of S1S2,
+leaving a few more science events in the data.
+Other than the quality cuts and FV cuts, the multipeak ﬁtting part of the S1only and S1S2 analysis are
+essentially identical.
+Environment: oﬄine V16
+Environment: XENONnT_el7.sr01_solar_pp.2
+Host midway3-0560.rcc.local
+ module version
+path  git
+ python  3.9.23
+/opt/XENONnT/anaconda/envs/XENONnT_el7.sr01_solar_pp.2/bin/python None
+  strax   1.6.5
+/opt/XENONnT/anaconda/envs/XENONnT_el7.sr01_solar_pp.2/lib/python3.9/site-
+packages/strax None
+straxen   2.2.7
+/opt/XENONnT/anaconda/envs/XENONnT_el7.sr01_solar_pp.2/lib/python3.9/site-
+packages/straxen None
+  cutax  1.19.6
+/project2/lgrandi/xenonnt/dali/lgrandi/xenonnt/software/cutax/solarpp-
+v2.0.0/cutax None
+ xedocs  0.2.31
+/opt/XENONnT/anaconda/envs/XENONnT_el7.sr01_solar_pp.2/lib/python3.9/site-
+packages/xedocs None
+ rframe  0.2.21
+/opt/XENONnT/anaconda/envs/XENONnT_el7.sr01_solar_pp.2/lib/python3.9/site-
+--- Page 10 ---
+Last update: 2026/02/10 23:47 xenon:xenonnt:lin:sr1:240717 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:lin:sr1:240717
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/05/07 18:18packages/rframe None
+st.storage [straxen.storage.rundb.RunDB (readonly: True),
+strax.storage.files.DataDirectory (readonly: True, path:
+/dali/lgrandi/xenonnt/raw, take_only: ('raw_records', 'raw_records_he',
+'raw_records_aqmon', 'raw_records_nv', 'raw_records_aqmon_nv',
+'raw_records_aux_mv', 'raw_records_mv')), strax.storage.files.DataDirectory
+(readonly: True, path: /dali/lgrandi/xenonnt/processed),
+strax.storage.files.DataDirectory (readonly: True, path:
+/project2/lgrandi/xenonnt/processed), strax.storage.files.DataDirectory
+(readonly: True, path: /project/lgrandi/xenonnt/processed),
+strax.storage.files.DataDirectory (path:
+/scratch/midway2/lin194/strax_data),
+straxen.storage.rucio_local.RucioLocalFrontend (readonly: True, path:
+/project/lgrandi/rucio), strax.storage.files.DataDirectory (readonly: True,
+path: /project/lgrandi/pp_neutrino/bkg/bkg_sr1),
+strax.storage.files.DataDirectory (readonly: True, path:
+/project/lgrandi/pp_neutrino/rn220/rn220_sr1),
+strax.storage.files.DataDirectory (readonly: True, path:
+/project/lgrandi/pp_neutrino/rn222/rn222_sr1),
+strax.storage.files.DataDirectory (readonly: True, path:
+/project/lgrandi/pp_neutrino/strax_data_for_ting/bkg_sr1)]
+lineage: 00-peak_basics-6bdyxhzzfz
+Event selection
+st = cutax.xenonnt_offline(analysis="pp_sr1",
+_rucio_local_path="/project/lgrandi/rucio", include_rucio_local=true,
+_auto_append_rucio_local=false, readonly=true)
+st.storage += [
+    strax.DataDirectory('/project/lgrandi/pp_neutrino/bkg/bkg_sr1'),
+    strax.DataDirectory('/project/lgrandi/pp_neutrino/rn220/rn220_sr1'),
+    strax.DataDirectory('/project/lgrandi/pp_neutrino/rn222/rn222_sr1'),
+strax.DataDirectory('/project/lgrandi/pp_neutrino/strax_data_for_ting/bkg_sr
+1'),
+]
+run_mode = ["tpc_bkg", "background_tpc_mv", "background_tpc_nv",
+"background_linked"],
+include_tags = ["_sr1a", "_sr1b", "_wimp"],
+exclude_tags = ["hot_spot", "hotspot_candidate"]
+targets = ["peak_basics", "peak_s1_positions_cnn"]
+The run numbers can be found in this note.
+Link to the code
+--- Page 11 ---
+2026/05/07 18:18 11/31 SR0+SR1 Radon-222 Analysis
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/The main code follows radon_analysis_v2_s1only.py  from github
+The relevant conﬁguration ﬁles are:
+configuration_files/radon_analysis_config_v2_s1only_sr1_offlineV16_rn222cali
+.json
+configuration_files/radon_analysis_config_v2_s1only_sr1_offlineV16.json
+configuration_files/radon_analysis_config_v2_s1only_sr1_offlineV16.py
+And runs with:
+python radon_analysis_v2_s1only.py submit --config_file
+configuration_files/radon_analysis_config_v2_s1only_sr1_offlineV16.json
+S1only method: area and r2 correction
+The cuts used for area and r2 corrections are listed as follows:
+to keep only the high energy alpha events: area > 2.0E4
+to select only the S1 type events: type == 1
+as a rough ﬁducial volume cut: (0.15 < area_fraction_top) & (area_fraction_top
+< 0.46)
+Fig.2.1: data after cuts
+Then we correct the area by ﬁtting it to the following function:
+.
+This is an empirical function that ﬁts the curve well as demonstrated in Florian's note . Notice that this
+particular area correction will NOT propagate deeper into the analysis; the purpose of this correction
+is to allow selection of Po210 events for the r2 correction.
+--- Page 12 ---
+Last update: 2026/02/10 23:47 xenon:xenonnt:lin:sr1:240717 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:lin:sr1:240717
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/05/07 18:18
+Fig.2.2a: orange curve shows the area vs AFT ﬁt for area correction Fig.2.2b: data after the area correction
+The next step is perform a spatial correction on S1_CNN developed as shown in Matteo's note .
+Applying the corrected area cut to select the Po210 events. Because of the plate-out eﬀect the Po210
+events should be mostly on the walls, and we can use them to correct the r2_s1_cnn . The orange
+data points are from the median of each horizontal slice, and the interpolation of these data points is
+used for correction.
+Fig.2.3a: orange curve shows the r2 vs AFT ﬁt for r2 correction Fig.2.3b: data after the r2 correction
+Then we correct the area  against r2. We ﬁt the corrected area  for Po210 vs corrected r2 using a
+linear curve. Notice however, we correct the r2 eﬀect using the uncorrected area. Empirically, this
+produced the best results visibly.
+Fig.2.4a: orange curve shows the area vs r2 ﬁt for area correction Fig.2.4b: data after the area correction
+Finally, we correct area  against AFT. The ﬁt function is exactly the same as done before the r2
+correction. However, a ﬁducial volume selection now uses the corrected r2, and the input area  has
+already been corrected via r2. With these changes, the selection for the curve can be more stringent;
+the Po214 alpha population is selected.
+--- Page 13 ---
+2026/05/07 18:18 13/31 SR0+SR1 Radon-222 Analysis
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/
+Fig.2.5a: orange curve shows the area vs AFT ﬁt for area correction Fig.2.5b: data after the area correction
+S1only methods: ﬁducial volume estimation
+The ﬁducial volume estimation from s1only analysis essentially follow Dominick's note . The main idea
+is to simply compare s1only events count to that of s1s2. The ﬁrst step is to match s1only event one-
+to-one to that of s1s2; any events without s2 are ignored. Also because s1s2 doesn't quite handle
+BiPo events well, those events are also cut out via s1only corrected area. The next step is deﬁning a
+reference volume using s1s2 as shown in Fig.2.6a with a known uncertainty. Then if we make a s1only
+ﬁducial volume cut, by comparing the count ratio:
+(reference-volume)*(counts in reference-volume and s1only-FV)/(counts in
+reference-volume),
+should give us the estimated s1only FV with the uncertainty determined by Clopper-Pearson intervals
+of a binary distribution (taking the larger side of the interval as the uncertainty).
+Fig.2.6a: s1s2 reference volume. The 3rd column shows the S1only S1_CNN
+position and the 4th column indicates shows the standard S1S2 position. The
+reference volume is a cut on the 4th column.Fig.2.6b: s1only ﬁducial volume via AFT and corrected r2. The 3rd column
+shows the S1only S1_CNN position and the 4th column indicates shows the
+standard S1S2 position. The ﬁducial volume is a cut on the 3rd column.
+S1only methods: correction from event selection
+With s1only selection, there will always be some events lying outside the reference volumes. The
+following ratio is then stored to as an acceptance with binomial error as well:
+(counts in reference volume and s1only-FV)/(counts in s1only-FV)
+Similarly, s1only selection also lacks other s1s2-cuts-without-FV (all s1s2 quality cut except the s1s2
+FV cut) as shown in note. The events outside the s1s2 cuts, and the following ratio is also stored to as
+an acceptance with binomial error as well:
+(counts in s1s2-cut-without-FV and s1only-FV)/(counts in s1only-FV)
+--- Page 14 ---
+Last update: 2026/02/10 23:47 xenon:xenonnt:lin:sr1:240717 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:lin:sr1:240717
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/05/07 18:18In practice, the ratio is combined to the following instead to avoid double counting excluded events as
+shown in Fig.2.7a,
+(counts in reference volume, s1s2-cut-without-FV, and s1only-FV)/(counts in
+s1only-FV)
+On the other hand, regarding the count non-uniformity of the reference volume, a factional error of
+1.0 +/- sqrt(count_std^2-(sqrt(count_mean))^2)/count_mean/sqrt(binN)  is given to
+both xy and rz distribution as shown in Fig2.7b (for detail, see this note). The -
+(sqrt(count_mean))^2  removes the Poisson eﬀect of this error estimate, the /sqrt(binN)  make
+it a standard-error instead of standard-deviation estimation and remove the dependence of the
+estimation to the bin number. The edge bins are removed due to their bias.
+Fig.2.7a: s1only-FV events outside reference volume or would otherwise be cut
+away by s1s2-quality cutsFig.2.7b: left: xy and rz count
+distribution. Right: count variation
+across all bins.
+S1only methods: multipeak ﬁtting
+Fig.2.8a: SR1 science  events with cuts applied Fig.2.8b: SR1 science  events with s1_corrF
+That part is completely identical to that of S1S2 method The correction according to the previous
+section should correct for the extra counts from the science events.
+
+--- Page 15 ---
+2026/05/07 18:18 15/31 SR0+SR1 Radon-222 Analysis
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/Fig.2.9: s1only multipeak ﬁt of a speciﬁc run chunk
+Variable Reference Value
+XeFidMass_s1s2Fig1.3 s1s2 ﬁducial mass (with x0.995 correction from
+Ananthu's note )3736 +/- 173 kg
+XeFidMass_refFig.2.6a s1s2 reference mass for s1only FV evaluation
+(with x0.995 correction from Ananthu's note )3441 +/- 159 kg
+refVol_xy_multErrFig2.7b xy-uniformity error multiplied to the S1only
+ﬁducial mass1.0000 +/- 0.0020
+refVol_r2z_multErrFig2.7b rz-uniformity error multiplied to the S1only
+ﬁducial mass1.0000 +/- 0.0007
+XeFidMass_s1only S1only ﬁducial mass with full error 2045 +/- 94 kg
+validS1S2RatioFig.2.7a validity correction, multiplied to the S1only alpha
+rate0.977+/-0.032
+Tab.2.1: relevant S1only related correction/errors for SR1
+SR0 Alpha Analysis
+Both the S1S2 and the S1only analysis are also performed for SR0 and the results are as the
+following. The SR0 data are coming for oﬄine V12.
+Environment: oﬄine V12
+Environment: XENONnT_el7.sr01_solar_pp.2
+Host midway3-0548.rcc.local
+ module version
+path  git
+ python  3.9.23
+/opt/XENONnT/anaconda/envs/XENONnT_el7.sr01_solar_pp.2/bin/python None
+  strax   1.6.5
+/opt/XENONnT/anaconda/envs/XENONnT_el7.sr01_solar_pp.2/lib/python3.9/site-
+packages/strax None
+straxen   2.2.7
+/opt/XENONnT/anaconda/envs/XENONnT_el7.sr01_solar_pp.2/lib/python3.9/site-
+packages/straxen None
+  cutax  1.19.6
+/project2/lgrandi/xenonnt/dali/lgrandi/xenonnt/software/cutax/solarpp-
+v2.0.0/cutax None
+ xedocs  0.2.31
+/opt/XENONnT/anaconda/envs/XENONnT_el7.sr01_solar_pp.2/lib/python3.9/site-
+packages/xedocs None
+ rframe  0.2.21
+/opt/XENONnT/anaconda/envs/XENONnT_el7.sr01_solar_pp.2/lib/python3.9/site-
+packages/rframe None
+st.storage [straxen.storage.rundb.RunDB (readonly: True),
+strax.storage.files.DataDirectory (readonly: True, path:
+/dali/lgrandi/xenonnt/raw, take_only: ('raw_records', 'raw_records_he',
+--- Page 16 ---
+Last update: 2026/02/10 23:47 xenon:xenonnt:lin:sr1:240717 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:lin:sr1:240717
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/05/07 18:18'raw_records_aqmon', 'raw_records_nv', 'raw_records_aqmon_nv',
+'raw_records_aux_mv', 'raw_records_mv')), strax.storage.files.DataDirectory
+(readonly: True, path: /dali/lgrandi/xenonnt/processed),
+strax.storage.files.DataDirectory (readonly: True, path:
+/project2/lgrandi/xenonnt/processed), strax.storage.files.DataDirectory
+(readonly: True, path: /project/lgrandi/xenonnt/processed),
+strax.storage.files.DataDirectory (path:
+/scratch/midway2/lin194/strax_data),
+straxen.storage.rucio_local.RucioLocalFrontend (readonly: True, path:
+/project/lgrandi/rucio), strax.storage.files.DataDirectory (readonly: True,
+path: /project/lgrandi/pp_neutrino/bkg/bkg_sr0),
+strax.storage.files.DataDirectory (readonly: True, path:
+/project/lgrandi/pp_neutrino/rn220/rn220_sr0),
+strax.storage.files.DataDirectory (readonly: True, path:
+/project/lgrandi/pp_neutrino/strax_data_for_ting/bkg_sr0)]
+lineage: 00-peak_basics-5mwtxr7xuj
+Event selection
+st = cutax.xenonnt_offline(analysis="pp_sr0", xedocs_version="global_v12",
+_rucio_local_path="/project/lgrandi/rucio", include_rucio_local=true,
+_auto_append_rucio_local=false, readonly=true)
+st.storage += [
+    strax.DataDirectory('/project/lgrandi/pp_neutrino/bkg/bkg_sr0'),
+    strax.DataDirectory('/project/lgrandi/pp_neutrino/rn220/rn220_sr0'),
+strax.DataDirectory('/project/lgrandi/pp_neutrino/strax_data_for_ting/bkg_sr
+0'),
+]
+run_mode = ["tpc_bkg", "background_tpc_mv", "background_tpc_nv",
+"background_linked"],
+include_tags = ["_sr0"],
+targets = ["event_info", "cuts_minimal", "cut_s1_area_hard_high_thres"]
+targets = ["peak_basics", "peak_s1_positions_cnn"]
+The run numbers can be found in this note.
+Link to the code
+The main code follows radon_analysis_v2_s1s2.py  and radon_analysis_v2_s1only.py  from
+github .
+The relevant conﬁguration ﬁles are:
+configuration_files/radon_analysis_config_v2_s1s2_sr0_offlineV12.json
+configuration_files/radon_analysis_config_v2_s1s2_sr0_offlineV12.py
+configuration_files/radon_analysis_config_v2_s1only_sr0_offlineV12.json
+--- Page 17 ---
+2026/05/07 18:18 17/31 SR0+SR1 Radon-222 Analysis
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/configuration_files/radon_analysis_config_v2_s1only_sr0_offlineV12.py
+The rate evolution plot is generated via a notebook:
+notebooks/zSR01_lowER_rate_SR0_V12.ipynb
+S1S2
+The SR0 area correction follow that of Rn222 in SR1. However, the ﬁnal cuts are separately optimized
+from SR1.
+Fig.3.1a: SR0 science  events with cuts applied Fig.3.1b: SR0 science  events with s1_corrF
+S1only
+The SR0 area correction follow that of Rn222 in SR1. However, the FV estimation is independently
+performed.
+Fig.3.2a: SR0 science  events with cuts applied Fig.3.2b: SR0 science  events with s1_corrF
+Variable Reference Value
+XeFidMass_s1s2Fig1.3 s1s2 ﬁducial mass (with x0.953 correction from
+Ananthu's note )3581 +/- 180 kg
+XeFidMass_refFig.2.6a s1s2 reference mass for s1only FV evaluation
+(with x0.953 correction from Ananthu's note )3298 +/- 166 kg
+refVol_xy_multErrFig2.7b xy-uniformity error multiplied to the S1only
+ﬁducial mass1.0000 +/- 0.0030
+--- Page 18 ---
+Last update: 2026/02/10 23:47 xenon:xenonnt:lin:sr1:240717 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:lin:sr1:240717
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/05/07 18:18Variable Reference Value
+refVol_r2z_multErrFig2.7b rz-uniformity error multiplied to the S1only
+ﬁducial mass1.0000 +/- 0.0012
+XeFidMass_s1only S1only ﬁducial mass 2170 +/- 110 kg
+validS1S2RatioFig.2.7a validity correction multiplied to the S1only
+alpha rate0.980 +/- 0.025
+Tab.3.1: relevant S1only related correction/errors for SR0
+Alpha Result Comparisons
+Link to the code
+The code follows the notebook from github .
+The relevant notebook is:
+notebooks/zSR01_lowER_comparisonMethod_SR01.ipynb
+Rate results relevant for lowER inference
+The ratios between alpha rates of diﬀerent alpha-decay isotopes technically is independent from that
+of Pb214/Rn222 ratio. However, these alpha ratios give us conﬁdence in how the S1S2/S1only alpha
+analysis methods perform, and we can use it to estimate the systematics from the methods.
+Notice that all the rates presented in the following are obtained from summing all the corrected
+counts of each run chunk (corrected by the multipeak ﬁt) divid by the overall livetime (see study  for
+the reason of this choice). These average rates includes the division by ﬁducial mass in the last step
+to incorporate the otherwise correlated error between run chunks. The ratios are obtain from direct
+division of these average rates, and as we can see the correlated error in ﬁducial mass cancels out
+form this division.
+Fig.4.1: SR0 science  rate and ratio evolution. _noFV  indicates not propagating FV error
+when dividing by FV. For the 3rd column, the Po214 is not shown for the S1S2 analysis
+because they are BiPo events.
+--- Page 19 ---
+2026/05/07 18:18 19/31 SR0+SR1 Radon-222 Analysis
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/
+Fig.4.2: SR1 science  rate and ratio evolution
+Fig.4.3: SR1a science  rate and ratio evolution
+Fig.4.4: SR1b science  rate and ratio evolution
+Fig.4.5: SR1 Rn222 calibration rate and ratio evolution
+Channel Rn222 Po218 Po214Final S1S2/S1only
+ratio
+SR0 S1S2 (uBq/kg) 2.0443 +/- 0.0085 1.9289 +/- 0.095 NA
+SR0 S1only (uBq/kg) 2.003 +/- 0.052 1.906 +/- 0.0500.851 +/-
+0.023
+SR0 S1S2/S1only 1.021+/-0.027 1.012+/-0.056 1.021+/-0.028
+SR1 S1S2 (uBq/kg) 1.1030 +/- 0.0047 1.0484 +/- 0.0052 NA
+SR1 S1only (uBq/kg) 1.095 +/- 0.036 1.047 +/- 0.035 0.450 +/- 0.015
+SR1 S1S2/S1only 1.007+/-0.033 1.001+/-0.034 1.007+/-0.034
+SR1a S1S2 (uBq/kg) 1.0430 +/- 0.0073 0.9940 +/- 0.0076 NA
+SR1a S1only (uBq/kg) 1.038 +/- 0.035 0.992 +/- 0.0340.426 +/-
+0.015
+SR1a S1S2/S1only 1.005+/-0.035 1.002+/-0.035 1.005+/-0.035
+SR1b S1S2 (uBq/kg) 1.1406 +/- 0.0060 1.0826 +/- 0.0070 NA
+--- Page 20 ---
+Last update: 2026/02/10 23:47 xenon:xenonnt:lin:sr1:240717 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:lin:sr1:240717
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/05/07 18:18Channel Rn222 Po218 Po214Final S1S2/S1only
+ratio
+SR1b S1only (uBq/kg) 1.131 +/- 0.038 1.082 +/- 0.0370.465 +/-
+0.016
+SR1b S1S2/S1only 1.026+/-0.033 1.001+/-0.035 1.008+/-0.035
+Rn222cali (uBq/kg) 48.610 +/- 0.087 46.167 +/- 0.092 NA
+Rn222cali (uBq/kg) 47.4 +/- 1.5 45.3 +/- 1.519.24 +/-
+0.63
+Rn222cali S1S2/S1only 1.0247+/-0.0030 1.019+/-0.034 1.026+/-0.033
+Tab.4.1: rate evaluations from the S1S2 and S1only method without correlated error
+Note that for Rn222 calibration, as the rate is changing as time evolves, to obtain a correct
+S1S2/S1only ratio, the S1S2 and S1only run list must be matched one-to-one, otherwise they could
+weigh diﬀerently, high vs low.
+The “ﬁnal S1S2/S1only ratio” is the Rn222 calibration S1S2/S1only ratio; it incorporates its statistics
+error and the full Rn222 and Po218 S1S2/S1only ratio diﬀerence as an additional error bar.
+Rate ratio systematic estimate
+There is quite a diﬀerence (~5% from Fig.4.6) in Po214/Rn222 ratio between SR0 (0.423 +/- 0.005)
+and SR1 Rn222-calibration (0.404 +/- 0.0015 ), and the most likely cause is the diﬀerence in observed
+spatial distribution (see this study ). This diﬀerence could be contributed by diﬀerence in convection
+speed; however, the SR1 convection speed has not been studied. While we do not expect this spatial
+distribution to change under the same conﬁguration, and so it will not contribute to ratio systematics
+within the same science run, this distribution is likely slight diﬀerent between SR0 and SR1. Moreover,
+this diﬀerence in ratio should include diﬀerence in plate-out eﬀect between SR0 and SR1
+conﬁguration. Hence, in order to use the Pb214/Rn222 from the Rn222 calibration in SR1, we will
+apply a scaling factor with a corresponding systematic uncertainty to the ratio.
+Channel Po218/Rn222 Ratio Po214/Rn222 Ratio
+SR0 S1S2 0.9436 +/- 0.0061 NA
+SR0 S1only 0.9519 +/- 0.0077 0.4249 +/- 0.0041
+SR1 S1S2 0.9505 +/- 0.0062 NA
+SR1 S1only 0.9562 +/- 0.0085 0.4107 +/- 0.0043
+SR1a S1S2 0.9530 +/- 0.0099 NA
+SR1a S1only 0.956 +/- 0.013 0.4106 +/- 0.0070
+SR1b S1S2 0.9491 +/- 0.0080 NA
+SR1b S1only 0.957 +/- 0.011 0.4108 +/- 0.0053
+Rn222cali S1S2 0.9498 +/- 0.0025 NA
+Rn222cali S1only 0.9557 +/- 0.0032 0.4056 +/- 0.0017
+Tab.4.3: rate ratio evaluation from the S1S2 and S1only methods
+--- Page 21 ---
+2026/05/07 18:18 21/31 SR0+SR1 Radon-222 Analysis
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/
+Fig.4.6: comparison between the rate/Rn222 ratio between S1S2 and S1only github . The y-
+axis is deﬁned as 100x1)/(Rn222-cali ratio); for this reason this value is at 0 for Rn222-cali.
+Take SR0 for instance, we want to correct according to the following 214Po/222Rn SR0/SR1_Rn222cali
+ratio. The assumption is that the plateout aﬀect Pb214 and Po214 in the same physical lost
+mechanism, but Po214 comes after Pb214 and so Po214 will receive a compound plate-out eﬀect
+from both Pb214 and Po214. In other words, if the lost mechanism is the same, the Po214 rate cannot
+be larger than Pb214 rate and so (Po214/Rn222 < Pb214/Rn222). If the plateout eﬀects were to
+change, it would change Po214/Rn222 more than Pb214/Rn222. Since the change of Po214/Rn222 is
+0.4249/0.4056 = 1.048 , to be conservative, we take the entire range into account as systematic
+for Pb214/Rn222, i.e. 1.024 +/- 0.024 .
+    1.0 + (0.4249/0.4056 - 1.0)/2.0 = 1.024
+with the error bar of,
+    sqrt(err((0.4249+/-0.0041)/(0.4056+/-0.0017))^2 + ((0.4249/0.4056 -
+1.0)/2.0)^2) = sqrt(0.011^2 + 0.024^2) = 0.026
+Then the correction factor would be,
+Channel Correction Factor
+SR0 1.024 +/- 0.026
+SR1a 1.006 +/- 0.019
+SR1b 1.006 +/- 0.015
+Tab.4.4: correction to the plate-out factor to be comparable to that of SR1 Rn222
+calibration
+The calculations can be found the last block of
+``notebooks/zSR01_lowER_comparisonMethod_SR01.ipynb``.
+--- Page 22 ---
+Last update: 2026/02/10 23:47 xenon:xenonnt:lin:sr1:240717 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:lin:sr1:240717
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/05/07 18:18Low ER to Alpha Ratio
+Finally, the main goal of the radon analysis is to estimate the Pb214 background in the lowER. To do
+that, we use the Rn222 calibration data, when the Pb214 contribution becomes orders of magnitude
+higher than the other science events. Then we take the Pb214/Rn222 ratio, track the Rn222 in the
+science runs, and use the same ratio to estimate the Pb214 count in the background runs
+For this estimation, it is important that the cuts and lowER FV are ﬁnalized, otherwise this part of the
+analysis need to be redone. It is also important that the runs/livetimes between the Pb214 and Rn222
+data match. Notice however, the alpha analysis can be untouched and can have their own FV (as long
+as no area corrections are updated). The reason is that the goal is getting the Pb214 counts in a ﬁxed
+energy range, FV, and period of time, with the proportionality,
+(Pb214 count) = (Pb214/Rn222 ratio)*(Rn222 count)
+It does NOT matter where in the parameter space this Rn222 is obtained, as long as the
+proportionality holds. Also for this reason, the errors coming from FVs of both Pb214 and Rn222
+should not be included for this Pb214 estimation. Notice that the Pb214 count should NOT be
+corrected by reconstruction eﬃciency and cut acceptance; the ﬁnal ﬁt templates should take this into
+account.
+The time-evolution aspect of the analysis is also important, since the chi2/ndof of the time-evolution
+ﬁt would give up conﬁdence on whether this Pb214/Rn222 ratio  is Rn222 rate dependent or not,
+assuming the contribution from the other background are constant in time. It would also be helpful to
+include some background runs in the time evolution. Although their statistical error is large, it
+provides additional information to the ﬁt. There are a two items regarding which energy range to use.
+The ﬁrst is that the event from [0, 10]keV may have large tritium component for the background run,
+and these event should not be included in this analysis. The second is that we did a AmBe calibration
+during the decay phase of the Rn222 calibration, which activate the xenon. Especially the Xe133
+component, it goes as low as ~70keV in range. These xenon activation event break the assumption
+that the background is constant in time and should also not be included .
+Environment: oﬄine V16
+Environment: XENONnT_el7.sr1_wimp_unblind
+Host midway2-0384.rcc.local
+ module version
+path  git
+ python  3.9.20
+/opt/XENONnT/anaconda/envs/XENONnT_el7.sr1_wimp_unblind/bin/python None
+  strax   1.6.5
+/home/lin194/.local/lib/python3.9/site-packages/strax None
+straxen   2.2.7
+/opt/XENONnT/anaconda/envs/XENONnT_el7.sr1_wimp_unblind/lib/python3.9/site-
+packages/straxen None
+  cutax  1.19.5
+/project2/lgrandi/xenonnt/dali/lgrandi/xenonnt/software/cutax/v1.19.5/cutax
+None
+ xedocs  0.2.31
+--- Page 23 ---
+2026/05/07 18:18 23/31 SR0+SR1 Radon-222 Analysis
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it//opt/XENONnT/anaconda/envs/XENONnT_el7.sr1_wimp_unblind/lib/python3.9/site-
+packages/xedocs None
+ rframe  0.2.21
+/opt/XENONnT/anaconda/envs/XENONnT_el7.sr1_wimp_unblind/lib/python3.9/site-
+packages/rframe None
+lineage: 00-event_info-3xnk7jcbkj
+Event selection
+st = cutax.xenonnt_offline(_rucio_local_path="/project/lgrandi/rucio",
+include_rucio_local=true, _auto_append_rucio_local=false, readonly=true)
+run_mode = ["background_linked", "tpc_radon_rn222"],
+include_tags = ["_sr1a", "_sr1b"],
+exclude_tags = ["*flash*", "*messy*", "*ramp*", "abandon", "bad",
+"pmt_trip", "after_rn220", "post_rn222", "no_gps"]
+def gen_masks(procDF, procData, verbosity=None):
+    mask_dict = {}
+    for key in procData:
+        if 'cut' in key: mask_dict[key] = procData[key]
+    ### mask_base
+    mask_base  = procData['cuts_minimal'] &
+procData['cut_s1_tightcoin_3fold'] & procData['cut_s1_area_hard_low_thres']
+    mask_dict['mask_base'] = mask_base
+    ### mask_area_thres
+    mask_gen  = np.copy(mask_base)
+    mask_gen &= (procData['cs1'] > 0.0)
+    mask_gen &= (procData['cs2'] > 5.0E2)
+    mask_dict['mask_area_thres'] = np.copy(mask_gen)
+    ######### mask_ER
+    mask_gen = np.copy(mask_base)
+#https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:pp_neutrino:sr0_sr
+1_run_list_and_data_selection#sr1
+    mask_ER_list = ['cut_s1_single_scatter', 'cut_s1_width',
+'cut_s1_max_pmt',\
+                    'cut_s1_area_fraction_top', 'cut_s1_pattern_top',
+'cut_s1_pattern_bottom',\
+                    'cut_s2_single_scatter',
+'cut_s2_width_wire_modeled_low_er',\
+                    'cut_cs2_area_fraction_top', 'cut_s2_pattern',\
+                    'cut_ambience', 'cut_shadow', 'cut_bdt_ac',
+'cut_lower_search_s2_area', 'mask_area_thres']
+    mask_gen = np.copy(mask_base)
+    mask_dict['mask_ER'] = np.copy(mask_gen)
+    ### mask_ROI
+--- Page 24 ---
+Last update: 2026/02/10 23:47 xenon:xenonnt:lin:sr1:240717 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:lin:sr1:240717
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/05/07 18:18    mask_gen = np.copy(mask_base)
+    mask_gen &= mask_dict['cut_fiducial_volume'] &
+mask_dict['cut_radius_wimp'] #& procDF['cut_er_band_lower']
+    mask_dict['mask_ROI'] = np.copy(mask_gen)
+    ### mask_final
+    mask_gen = np.copy(mask_base)
+    mask_gen &= mask_dict['mask_ER'] & mask_dict['mask_ROI']
+    mask_dict['mask_final'] = np.copy(mask_gen)
+Run 50951-50965  are removed to account for the Rn222 source injection time.
+Post Kr83m runs are also removed, thanks to the notebook  from Yue.
+Link to the code
+The main code follows radon_analysis_v2_s1s2ER.py  from github .
+The relevant conﬁguration ﬁles are:
+configuration_files/radon_analysis_config_v2_s1s2ER_sr1_offlineV16_rn222cali
+.json
+configuration_files/radon_analysis_config_v2_s1s2ER_sr1_offlineV16_rn222cali
+.py
+configuration_files/radon_analysis_config_v2_s1s2ER_sr1_offlineV16_rn222cali
+_10_70.json
+configuration_files/radon_analysis_config_v2_s1s2ER_sr1_offlineV16_rn222cali
+_10_70.py
+lowER methods: predeﬁned lowER Cuts
+Fig.5.1a: just ER band and FV cut Fig.5.1b: applying all the cuts
+lowER methods: least square ﬁt the ratio
+The rate of events within [10, 70]keV is shown in Fig.5.2a. Due to the activated Xe133 events >70keV
+starting from AmBe calibration after run 51379  on 2023-03-28 10:34  LNGS time, and that [0,
+10]keV can have tritium component for the background runs, the optimal range of [10, 70]keV is
+chosen. Results from other ranges can be found in this note.
+Each data point contains runs within 24 hours, unless the counts is smaller than 10 events. To avoid
+--- Page 25 ---
+2026/05/07 18:18 25/31 SR0+SR1 Radon-222 Analysis
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/the complication from the asymmetric Poisson error, more subsequent runs will be included past 24
+hours to ensure the data point has at least 10 events. Moreover, if there is a change of run mode (e.g.
+science runs vs calibration runs), then the data point will NOT contain runs from two diﬀerent modes.
+Another item to take care of is the anti-correlation eﬃciency (ACE) dependence on both the run and
+calibration. For details, see this note. Moreover, the alpha event reconstruction eﬃciency (EBE) also
+has run dependence (see note). Since this dependence is a single scalar and we are after the
+lowER/alpha, this alpha EBE correction can be done on lowER rate as well. These corrections are
+performed at each data point, and the resulting diﬀerence can be found in Fig.5.2b.
+Fig.5.2a: The top is showing the lowER spectrum in count, where the 10-70keV
+is marked in blue. The bump starting from 70keV is coming from Xe133, the the
+70keV choice is to avoid the bump. The bottom is showing the lowER rate
+including the Rn222 calibration time period and background time period before
+and after the calibration. The top spectrum includes events on from the runs
+shown in the bottom plot.Fig.5.2b: The top shows the same lowER spectrum before (blue) and after (black) ACE+EBE
+run/calibration dependence correction. The bottom shows the absolute count diﬀerence
+(black-blue).
+The lowER/Rn222 rate ratio ﬁt is done by ﬁtting the data with lowER = a * alpha + b  using the
+conventional method with x- and y-error. The choice of method is Orthogonal Distance Regression
+(ODR)  with the scipy.odr package . The advantage of ﬁtting a time evolution of the lowER/Rn222 rate
+ratio is the discrimination power between a and b as Rn222 rate varies; these two variables are
+otherwise indistinguishable if we combine all data at once.
+The result is shown in Fig.5.4, with detailed numbers showing in the plot legends. The chi2/ndof is
+given in the bottom legend, and the p-value is given on the top legend. The parameter a is given as
+the ratio , and b as background . Notice that the unit conversion on the top legend and top right y-
+axis are not completely accurate (because of using only Fig.6.1, but not Fig.6.2); they are there to
+provide order-of-magnitude validity for the ﬁt. Note that the ﬁnal ratio need to include an additional
+2% error from ACE+EBE for the calibration (see note), which will be separately added in the ﬁnal
+section.
+--- Page 26 ---
+Last update: 2026/02/10 23:47 xenon:xenonnt:lin:sr1:240717 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:lin:sr1:240717
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/05/07 18:18
+Fig.5.4: the top plot is again showing the ACE+EBE-corrected ER rate in blue just like in
+Fig5.2, but with the FV error removed. Additionally, it also shows the S1S2 Rn222 rate as
+the red data points. The bottom plot shows the lowER versus alpha direct without the
+time-information. Fitted the data point with the same ﬁt function but apply both x- and y-
+error using the ODR method. The ﬁtted function is shown in red with 1-sigma error bar
+from the ﬁtted parameters.
+Item Description Value
+FVFiducial mass with the cut_fiducial_volume_solar_pp  cuts
+from Sebastian's note4240 +/- 130 kg
+ratio [10, 70]keV/Rn222 ratio from the ﬁt 0.00455 +/- 0.00013
+Tab.5.1: resulting lowER/Rn222 ratio as evaluated from the Rn222 calibration. The FV is
+for the lowER selection
+Conversion Factors
+Link to the code
+The code follows the notebook from github .
+The relevant notebook is:
+notebooks/zSR01_lowER_efficiencyErrors_SR1.ipynb
+--- Page 27 ---
+2026/05/07 18:18 27/31 SR0+SR1 Radon-222 Analysis
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/Derivation of the conversion factors
+There are two conversion factors that translate Pb214 in uBq/kg to the [10, 70]keV/Rn222 ratio. The
+ﬁrst conversion factor is associated with the theoretical Pb214 spectrum within [10, 70]keV energy
+range. Figure 6.1 shows in red the ground-state Pb214 beta decay spectrum with forbidden state
+taken into consideration. The second is the ground state ratio that is taken to be 0.098  from Cecilia's
+study .
+Fig.6.1: True ground state spectra considering the forbidden states for Pb214(red). The
+ratio of interest is (ground state spectrum within [10, 70]~keV range)/(full spectrum).
+The second is from the SR1 detector response. Figure 6.2a shown the eﬃciency including peak
+reconstruction eﬃciency , anti-correlation eﬃciency , lowER cut acceptance  combined ( github ). Figure.
+6.2b takes the true Pb214 spectrum in red, apply detector bias/resolution  to convert to the blue
+spectrum, and the Fig6.1a eﬃciency to convert to the purple spectrum. The purple area will be the
+ﬁnal rate of the Pb214 beta detected in the [10, 70]keV range. The purple(shaded)/red(solid ﬁll) area
+ratio is value to this second conversion factor.
+Finally, while Fig.6.2b is obtained with the forbidden beta spectrum, we also evaluated the same with
+allowed beta spectrum and take the full diﬀerence as the beta decay model systematics. For theory
+behind allowed and forbidden spectrum, see paper .
+Fig.6.2a: ﬁnal lowER SR1b eﬃciencyFig.6.2b: red is the true Pb214 ground-state spectrum, blue is
+after bias/smearing applied, and purple is after detector eﬃciency
+applied.
+conversion factor value
+Pb214 ground-state [10, 70]keV/full 0.0829
+Pb214 ground-state branching ratio 0.098
+--- Page 28 ---
+Last update: 2026/02/10 23:47 xenon:xenonnt:lin:sr1:240717 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:lin:sr1:240717
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/05/07 18:18conversion factor value
+Detector responce conversion factor 0.846+/-0.019
+Beta spectrum model 1.00000 +/- 0.00009
+Combined 0.00687 +/- 0.00021
+Tab.6.2: conversion parameters from [10, 70]keV rate to Pb214 rate
+Note: the combined uncertainty for the conversion factor does NOT include the calibration ACE
+uncertainty yet; the error is given as an overall 2% uncertainty later as shown in Tab.7.3.
+To convert [10, 70]keV/Rn222 back to Pb214 rate in uBq/kg, we need to divid by all these 3 factors.
+Studies
+See note, note, and note for various validation studies and decisions. The ﬁnal updates can be found
+in this note.
+Results
+Referring to the main reference  for cut/run list consistency.
+Eﬀective Pb214 rate as input to inference, SR1b and SR0
+Item DescriptionSR0 Pb214
+input rate
+(uBq/kg)
+—————–SR1a
+Pb214
+input
+rate
+(uBq/kg)
+—————–SR1b Pb214
+input rate
+(uBq/kg)
+—————–
+full1.386 +/-
+0.068 , 4.9%0.695 +/-
+0.032,
+4.5%0.760 +/-
+0.034 , 4.4%
+raw alpha rate (uBq/kg), no FV corr err, Tab.4.1 2.0443+/-0.0085 1.1406+/-0.0060
+rateRate error from Rn222 rate S1S2 analysis without FV error,
+see sec.1 . Also, the science run ebe for the alphas (see note)
+is included in this term+/- 0.0058, 0.42% +/- 0.0040, 0.53%
+FVFiducial volume estimation error (for both alpha FV and
+lowER FV)+/- 0 +/- 0
+plate-out factor of the isotope, Tab.4.4 x Tab.5.1x 0.00466 +/-
+0.00018x 0.00458 +/-
+0.00015
+ratio Ratio of [10, 70]keV over Rn222 rate from Fig.5.4 +/- 0.040, 2.9% +/- 0.022, 2.9%
+convConversion factor from Rn222 calibration data to SR1/SR0
+science data+/- 0.035, 2.6% +/- 0.011, 1.5%
+ace/ebeRate-dependence of anti-correlation-eﬃciency(ACE)/event-
+building-eﬃciency(EBE) corrections of lowER&alpha rates+/- 0.028, 2.0% +/- 0.015, 2.0%
+beta rate conversion, Tab.6.2 / 0.00687 +/- 0.00021
+specConversion factor from Fig.6.1; uncertainty from theoretical
+ground state spectrum+/- 0.00012,
+0.009%+/- 0.000068,
+0.009%
+eﬀ LowER detector eﬃciency factor from Fig.6.2 +/- 0.031, 2.2% +/- 0.017, 2.2%
+--- Page 29 ---
+2026/05/07 18:18 29/31 SR0+SR1 Radon-222 Analysis
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/Item DescriptionSR0 Pb214
+input rate
+(uBq/kg)
+—————–SR1a
+Pb214
+input
+rate
+(uBq/kg)
+—————–SR1b Pb214
+input rate
+(uBq/kg)
+—————–
+Tab.7.3
+NOTE that this is an eﬀective Pb214 rate estimate evaluated for lowER background ﬁt. The
+uncertainty does NOT represent the uncertainty of a estimation of the physical Pb214 rate. Because of
+the nature of the eﬀective Pb214 rate, there are multiple components that are assigned 0
+uncertainty:
+FV: as described in this section . Moreover, the FV uncertainty will be applied after the lowER
+inference
+spec: The possible uncertainty here will be on the excited state branching ratio (see Cecilia's
+slides ). However, because the inference covers [0, 200]keV, which only covers the Pb214
+ground state spectrum. Remember our goal is to estimate the Pb214 background within [0,
+200]keV by observing this background in [10, 70]keV, as long as the beta spectrum model is
+consistent between this study and the lowER inference, the observation should not known about
+the uncertainty of the excited state branching ratio. On the other hands, the allowed vs
+forbidden beta spectrum model directly inﬂuence the ground state spectrum shape, and we are
+doing the [10, 70]keV to [0, 200]keV range conversion. This uncertainty should be added.
+eﬀ: Since the eﬃciency correction is on Rn222 calibration data, this uncertainty comes from the
+eﬃciency correction of SR1b for both SR1 and SR0
+True Pb214/Rn222 ratio estimate
+As this ratio is in regard to the physical isotope lost from the FV to the wall, i.e. the hypothetical
+plateout eﬀect. This ratio is the part boxed in blue in Eq.7.2.
+SR Pb214/Rn222 plate-out ratio
+SR0 0.678+/-0.033
+SR1a
+SR1b 0.666+/-0.029
+Rn222cali 0.662+/-0.027
+Tab.7.4
+Overall equation
+Eq.7.2 equation to derive Pb214 concentration in uBq/kg. Blue-boxed the plateout-ratio
+contribution
+R(^{214}Pb) =
+--- Page 30 ---
+Last update: 2026/02/10 23:47 xenon:xenonnt:lin:sr1:240717 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:lin:sr1:240717
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/05/07 18:18\left(\frac{C_{\alpha,b}(^{222}Rn)}{t_{\alpha,b}M_{\alpha}}\frac{c_1}{e_{E}}\right)\left(r_{f}c_2\
+right)\left(\frac{c_{s}}{r_{[10, 70]}b_{g}e_{b}}\right),
+r_{f}\mbox{: ﬁt}\left(y_i = r_fx_i+b\;\middle|\; x_i=\frac{C_{\alpha,c}(^{222}Rn,
+i)}{t_{\alpha,c}(i)M_{\alpha}e_{E}(i)}, y_i=\frac{C_{l,c}([10,70], i)}{t_{l,c}(i)M_{l}e_{A}(i)} \right)
+Item Description Reference
+Pb214 activity concentration in uBq/kg Tab.7.3
+overall Rn222 raw count from S1S1 alpha analysis of SR, :
+background runsTab.4.1
+overall deadtime-subtracted livetime from S1S1 alpha analysis of
+SR, : background runs
+note
+ﬁducial mass from S1S2 alpha analysis Tab.1.1
+1.0 +/- 0.0No longer
+relevant
+overall alpha event building eﬃciency (EBE) of SR, : EBE
+ note
+lowER vs Rn222 rate ﬁt ratio, : ﬁt
+ Tab.5.1
+S1S2 versus S1only isotope ratio correction factor Tab.4.4
+Pb214 beta spectrum model correction factor, : spectrum shape
+ Tab.6.2
+Pb214 beta spectrum [10, 70]keV to full ground state spectrum
+ratioTab.6.2
+Pb214 beta decay ground state branching ratio, : ground state
+ Tab.6.2
+lowER overall eﬃciency eﬀect within [10, 70] of SR, : background
+runsTab.6.2
+ﬁt parameter as non-Pb214 background contribution during the
+Rn222 calibrationFig.5.4
+raw count within [10, 70]keV from lowER analysis of Rn222
+calibration run-data-point-ID , : lowER analysis, : calibration runs
+Fig.5.4
+deadtime-subtracted livetime from lowER analysis of Rn222
+calibration run-data-point-ID , : lowER analysis, : calibration runs
+Fig.5.4
+ﬁducial mass from optimized lowER pp-neutrino analysis Tab.5.1
+lowER anti-correlation eﬃciency (ACE) of Rn222 calibration run-
+data-point-ID , : ACE
+note
+Rn222 raw count from S1S2 alpha analysis of Rn222 calibration
+run-data-point-ID , : calibration runs
+Fig.5.4
+deadtime-subtracted livetime from S1S2 alpha analysis of Rn222
+calibration run-data-point-ID , : calibration runs
+Fig.5.4
+alpha event building eﬃciency (EBE) of Rn222 calibration run-data-
+point-ID , : EBE
+note
+Tab.7.4
+Reference
+Note Author(s) Date
+Radon Analysis Validity/Consistency Checks Jul 21st, 2024
+Alpha ratios validity checks Apr 18th, 2024
+Update on alpha to lowER ratio with V14 cut acceptance Mar 21st, 2024
+Alpha Rate Comparison, S1S2 vs S1only Using S1_CNN Update Feb 8th, 2024
+S1only Alphas Aug 28th, 2023
+--- Page 31 ---
+2026/05/07 18:18 31/31 SR0+SR1 Radon-222 Analysis
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/Note Author(s) Date
+Cuts for non-BiPo S1S2 Alphas Aug 9th, 2023
+XENONnT SR0 radon analysis - signal corrections Dominick Mar 30th, 2022
+Using S1-Only Data-Trained CNN for 3D Position Reconstruction Matteo Nov 30th, 2021
+Closer look into alpha rate evolution in XEnT Florian Dec 17th, 2020
+1)
+Rn222-cali ratio) - (SR ratio
+From:
+https://xe1t-wiki.lngs.infn.it/  - XENON1TWiki
+Permanent link:
+https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:lin:sr1:240717
+Last update: 2026/02/10 23:47

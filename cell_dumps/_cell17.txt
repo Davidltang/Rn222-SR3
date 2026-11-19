@@ -1,0 +1,4 @@
+### Correction 1: Area vs AFT
+
+Fit the Rn-222/220 band centerline using `exp_bump_model`, then normalize all areas to AFT = 0.30.
+The fit uses AFT ∈ [0.12, 0.55] to avoid edge effects, but the correction is applied to the full dataset.

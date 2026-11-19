@@ -1,0 +1,142 @@
+# ═══════════════════════════════════════════════════════════════
+# CORRECTION 3a: r² vs Area — band selection + polynomial fit
+# ═══════════════════════════════════════════════════════════════
+# Fit AFT-corrected area vs AFT-corrected r².
+# Select band with LINEAR boundaries, fit degree-5 polynomial
+# to the band centerline using ONLY r² < 60.
+#
+# X-axis: r2_aft_corrected  (from Correction 2)
+# Y-axis: area_aft_corrected (from Correction 1)
+# Output: area_2_corrected   (AFT + r² corrected)
+#
+# Fit range: r2_aft_corrected ∈ [0, 100], area ∈ [0, 1e5]
+
+r2_min_area, r2_max_area = 0, 100
+R2_FIT_MAX = 55          # only fit using r² < 60 within the band
+POLY_DEG_R2 = 6
+
+# ── Linear band boundaries in r2_aft_corrected vs area_aft_corrected ──
+# area = k * r2_aft_corrected + intercept
+BAND_K = -110
+BAND_INTERCEPT_UPPER = 75000
+BAND_INTERCEPT_LOWER = 68000
+
+# Select events in the fit range
+mask_r2area = (
+    (d_cor['r2_aft_corrected'] >= r2_min_area) & (d_cor['r2_aft_corrected'] <= r2_max_area) &
+    (d_cor['area_aft_corrected'] >= 0) & (d_cor['area_aft_corrected'] <= 1e5)
+)
+d_r2area = d_cor.loc[mask_r2area].copy()
+
+# Tag events inside the linear band
+d_r2area['in_r2_band'] = (
+    (d_r2area['area_aft_corrected'] < BAND_K * d_r2area['r2_aft_corrected'] + BAND_INTERCEPT_UPPER) &
+    (d_r2area['area_aft_corrected'] > BAND_K * d_r2area['r2_aft_corrected'] + BAND_INTERCEPT_LOWER)
+)
+
+print(f'Events in fit range: {len(d_r2area):,}')
+print(f'Events in linear band (k={BAND_K}): {d_r2area["in_r2_band"].sum():,}')
+
+# ── Bin band events in r2_aft_corrected, get median area_aft_corrected ──
+n_r2_bins_area = 30
+r2_edges_area = np.linspace(r2_min_area, r2_max_area, n_r2_bins_area + 1)
+d_r2area['r2_bin'] = pd.cut(d_r2area['r2_aft_corrected'], bins=r2_edges_area)
+
+medians_area = (
+    d_r2area[d_r2area['in_r2_band']]
+    .groupby('r2_bin', observed=True)['area_aft_corrected']
+    .median()
+)
+counts_area = (
+    d_r2area[d_r2area['in_r2_band']]
+    .groupby('r2_bin', observed=True)['area_aft_corrected']
+    .count()
+)
+
+r2_c_area = medians_area.index.map(lambda iv: iv.mid).astype(float).values
+area_meds = medians_area.values
+
+# ── Select bins for fitting: ≥10 events AND r² < R2_FIT_MAX ──
+good_area = (counts_area.values >= 10) & (r2_c_area < R2_FIT_MAX)
+
+r2_fit_area = r2_c_area[good_area]
+a_fit = area_meds[good_area]
+n_fit_area = counts_area.values[good_area]
+
+print(f'r² bins with ≥10 band events & r² < {R2_FIT_MAX}: {len(r2_fit_area)}')
+print(f'Median area range: {a_fit.min():.0f} – {a_fit.max():.0f} PE')
+
+# ── Fit degree-N polynomial: area = poly(r2_aft_corrected) ──
+p0_r2area = [np.median(a_fit)] + [0.0] * POLY_DEG_R2
+popt_r2area, pcov_r2area = curve_fit(polynomial, r2_fit_area, a_fit,
+                                      p0=p0_r2area, maxfev=50000)
+perr_r2area = np.sqrt(np.diag(pcov_r2area))
+
+print(f'\nDegree-{POLY_DEG_R2} polynomial fit: area(r2_aft_corrected)  [r² < {R2_FIT_MAX}]')
+print(f'  c₀ = {popt_r2area[0]:.0f} ± {perr_r2area[0]:.0f} PE')
+for i in range(1, min(6, POLY_DEG_R2 + 1)):
+    print(f'  c{i} = {popt_r2area[i]:.4e} ± {perr_r2area[i]:.4e}')
+print(f'  ... (total {POLY_DEG_R2 + 1} coefficients)')
+
+area_ref_r2 = polynomial(0, *popt_r2area)
+print(f'  Reference area (r2_aft_corrected=0) = {area_ref_r2:.0f} PE')
+
+# ── Apply correction: normalize area to r2_aft_corrected=0 ──
+cf_r2_raw = area_ref_r2 / polynomial(d_cor['r2_aft_corrected'].values, *popt_r2area)
+cf_r2 = np.clip(cf_r2_raw, 0.5, 2.0)
+
+d_cor['area_2_corrected'] = d_cor['area_aft_corrected'] * cf_r2
+d_cor['corr3_factor'] = cf_r2
+
+n_clipped_r2 = (cf_r2_raw != cf_r2).sum()
+print(f'Correction 3 factor range: [{cf_r2.min():.4f}, {cf_r2.max():.4f}]')
+if n_clipped_r2 > 0:
+    print(f'  Clipped {n_clipped_r2} values to [0.5, 2.0]')
+print(f'Correction 3 applied — new column: area_2_corrected')
+
+# ── Plot ──
+fig, axes = plt.subplots(1, 2, figsize=(14, 5.5))
+
+# Left: 2D histogram with band boundaries and fit
+ax = axes[0]
+h = ax.hist2d(d_r2area['r2_aft_corrected'], d_r2area['area_aft_corrected'],
+              bins=[80, 100],
+              range=[[r2_min_area, r2_max_area], [30e3, 100e3]],
+              cmin=1, norm=matplotlib.colors.LogNorm())
+plt.colorbar(h[3], ax=ax, label='Counts')
+
+r2_fine_area = np.linspace(r2_min_area, r2_max_area, 200)
+ax.plot(r2_fine_area, BAND_K * r2_fine_area + BAND_INTERCEPT_UPPER,
+        '--', color='cyan', lw=2, alpha=0.7, label=f'k={BAND_K} band (upper)')
+ax.plot(r2_fine_area, BAND_K * r2_fine_area + BAND_INTERCEPT_LOWER,
+        '--', color='cyan', lw=2, alpha=0.7, label=f'k={BAND_K} band (lower)')
+ax.plot(r2_fine_area, polynomial(r2_fine_area, *popt_r2area),
+        'r-', lw=2, label=f'Poly fit (deg {POLY_DEG_R2})')
+ax.axvline(x=R2_FIT_MAX, color='orange', ls=':', lw=1.5,
+           label=f'r² fit limit = {R2_FIT_MAX}')
+ax.set_xlabel('r2_aft_corrected [cm²]')
+ax.set_ylabel('area_aft_corrected [PE]')
+ax.set_title('r2_aft_corrected vs area_aft_corrected — Band + Fit')
+ax.legend(fontsize=9)
+ax.grid(True, alpha=0.2)
+
+# Right: Median binned with fit
+ax = axes[1]
+ax.errorbar(r2_fit_area, a_fit,
+            yerr=np.sqrt(np.maximum(a_fit, 1))/np.sqrt(n_fit_area),
+            fmt='o', capsize=3, color='steelblue',
+            label=f'Median area per r² bin (r² < {R2_FIT_MAX})')
+ax.plot(r2_fine_area, polynomial(r2_fine_area, *popt_r2area),
+        'r-', lw=2, label=f'Poly fit (deg {POLY_DEG_R2})')
+ax.axhline(area_ref_r2, color='gray', ls='--', lw=1.5,
+           label=f'Ref (r²=0) = {area_ref_r2:.0f} PE')
+ax.axvline(x=R2_FIT_MAX, color='orange', ls=':', lw=1.5,
+           label=f'r² fit limit = {R2_FIT_MAX}')
+ax.set_xlabel('r2_aft_corrected [cm²]')
+ax.set_ylabel('Median area_aft_corrected [PE]')
+ax.set_title('Correction 3: r2_aft_corrected vs Area — Median + Poly Fit')
+ax.legend(fontsize=9)
+ax.grid(True, alpha=0.3)
+
+safe_tight(fig)
+plt.show()

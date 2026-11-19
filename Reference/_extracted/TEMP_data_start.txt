@@ -1,0 +1,192 @@
+--- Page 1 ---
+2026/06/10 18:19 1/5 Analysis Suggestions
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/Analysis Suggestions
+— Abby Kopec  and others March 20, 2026  This is likely to change rapidly, we'll try to keep it up
+to date
+Selecting your Run(s)
+The Runs Database  tells you what new runs we have taken and the shifters should have noted
+important run conditions. Browse runs here for what you would like to study.
+Launching Jupyter
+Follow the analysis beginner's guide .
+Notes:
+We recommend either midway2 or midway3, but stick to one because the ﬁles in the home directories
+are diﬀerent. You have a computer, you need a terminal to access midway with ssh:
+ssh YOU@midway3.rcc.uchicago.edu  or ssh YOU@midway2.rcc.uchicago.edu
+You will need a GitHub account. If you're just starting, check out the tutorials . To get these, you might
+need to set up an ssh key (DO ON MIDWAY, it doesn't help to install the software locally when you
+need it on midway). Follow this GitHub instructions for ssh keys . Now whenever you ask GitHub for
+software, it'll recognize you on midway and ask for the passphrase you created for the key and then
+safely download.
+You need env_starter  from GitHub  probably in your home folder ~
+Then you can start a jupyter lab session with
+. env_starter/start_jupyter.sh --tag el7.2025.07.2
+Right now we're using el7.2025.07.2  container, but we'll try to update this as things
+change.
+For New Runs AFTER 078211 (March 11, 2026)
+You need your own local version of straxen  probably in your home folder.
+git clone git@github.com:XENONnT/straxen.git
+cd straxen
+git checkout daq-vanilla
+--- Page 2 ---
+Last
+update:
+2026/04/21
+04:18xenon:xenonnt:org:recommissioning:data_start https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:org:recommissioning:data_start
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/06/10 18:19In your Jupyter notebook, add the local path manually:
+import sys
+sys.path.insert(0, '/PATH/TO/straxen' )
+ 
+import straxen
+straxen. print_versions ()
+You should see for straxen (and straxen only) that your path is now:
+/PATH/TO/straxen    branch: daq-vanilla
+Try to load some peaklets for your run in a jupyter notebook.
+import strax
+import straxen
+import numpy as np
+straxen.print_versions()
+The print versions is so important, because you should see for straxen (and straxen only) that your
+path is now: /home/YOU/straxen/straxen  and git branch:daq-vanilla  There should be a
+github version hash: e97dc09 . This will need to be updated often!
+and no longer
+/opt/XENONnT/anaconda/envs/XENONnT_el7.2025.07.2/lib/python3.11/site-
+packages/straxen  and git none
+Then try to get data using the ONLINE  context:
+st = straxen.contexts.xenonnt_online(output_folder =
+'/scratch/midway2/YOU/strax_data') #Could use midway3 scratch too
+st.storage.append(strax.DataDirectory('/project/lgrandi-
+shared/commissioning/',readonly=True)) #we have some data stored here!
+df = st.get_array( '0RUNID','peaklets')
+If it works, yay! Have fun! Otherwise, if the data for your run 0RUNID is not available, you might have
+to get it yourself.
+For Runs BEFORE 078211 (March 11, 2026)
+You do not need the local installation of straxen for this earlier data. Therefore your ﬁrst cell:
+straxen.print_versions()
+Should have path:
+/opt/XENONnT/anaconda/envs/XENONnT_el7.2025.07.2/lib/python3.11/site-
+packages/straxen  and git none
+Note: no need to add a speciﬁc straxen path here. The straxen version that comes with the conainer
+--- Page 3 ---
+2026/06/10 18:19 3/5 Analysis Suggestions
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/is the good one.
+Getting Data Yourself
+Unless authorized by an AC to download to /project/lgrandi-shared/commissioning/ ,
+download data to your scratch, either /scratch/midway2/YOU/  or /scratch/midway3/YOU/ . We
+recommend having a directory in there called strax_data  which you can go there cd
+/scratch/midway2/YOU/  and mkdir strax_data . While your home directory is diﬀerent on
+midway2 and midway3, you can access both scratch directories from either.
+On Midway3 open the apptainer:
+09/04/2026: adding –contain ﬂag for apptainer . admix-download becomes unstable without this
+option.
+module load apptainer
+apptainer shell --contain --bind /cvmfs --bind /home/$USER --bind
+/project2/lgrandi/xenonnt/dali:/dali --bind /project2 --bind /project/ --
+bind /scratch/midway2/$USER --bind /scratch/midway3/$USER
+/project2/lgrandi/xenonnt/singularity-images/xenonnt-el7.2025.07.2.simg
+On Midway2 open singularity:
+module load singularity
+singularity shell --contain --bind /cvmfs --bind /home/$USER --bind
+/project2/lgrandi/xenonnt/dali:/dali --bind /project2 --bind /project/ --
+bind /scratch/midway2/$USER --bind /scratch/midway3/$USER
+/project2/lgrandi/xenonnt/singularity-images/xenonnt-el7.2025.07.2.simg
+You will be working in the Container with all installs you need ( again el7.2025.07.2  for now… )
+where software packages are frozen in time and should never stop working unless we make major
+changes to strax, straxen and cutax and the data lineage doesn't ﬁt anymore, which is why the ACs
+will try to keep this updated.
+For New Runs AFTER 078211 (March 11, 2026)
+You might need to have the local install of straxen on the vanilla-daq  branch? Git clone, then git
+checkout.
+Make sure you are in your strax_data  directory: cd /scratch/midway3/$USER/strax_data
+admix-download 0RUNID peaklets
+This should work and download the ﬁles. You can simply exit  the container. Then get a jupyter lab
+notebook up and running or restart your existing kernel, and try loading peaklets  now.
+Note that:
+Please specify the hash. “mqxa33b2om” for peaklets @2026/04, or try Carlo's example code  to
+check hash for your data type
+The command admix-download sometimes fails randomly. Please try several times, and try –dir
+DIR option
+--- Page 4 ---
+Last
+update:
+2026/04/21
+04:18xenon:xenonnt:org:recommissioning:data_start https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:org:recommissioning:data_start
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/06/10 18:19In the notebook, remember to use an ONLINE context to load the data (see “For New Runs…” above).
+17/04/2026: Temporary ﬁx for authorization issue
+Currently the authorization process of RSE is unstable. If the method above doesn't work, please try
+using the temporary ﬁx of proxy as follows:
+module load singularity && singularity shell --contain --bind /home/$USER --
+bind /project2/lgrandi/xenonnt/dali:/dali --bind /project2 --bind /project/
+--bind /scratch/midway2/$USER /project2/lgrandi/xenonnt/singularity-
+images/xenonnt-development.simg
+export X509_USER_PROXY=/project2/lgrandi/grid_proxy/maxime_temp/x509_proxy
+cd /path/to/download/data/PLEASE/USE/SCRATCH
+admix-download RUN_ID raw_records
+fuse simulations
+We added to our private_nt_aux_ﬁles  a new fuse conﬁguration ﬁle for SR3. In this conﬁguration we
+disable most of our detector dependent eﬀects like ﬁeld distortions, charge insensitive volumes etc.
+Instead the conﬁg uses a plain homogeneous drift ﬁeld with drift velocity and longitudinal diﬀusion
+taken from this paper . By default we assume a drift ﬁeld of 100 V/cm. The secondary scintillation was
+updated as well. Here we assume a constant electron extraction eﬃciency of 80 % with a constant
+secondary scintillation gain of 42.5 pe/e.
+To run fuse simulations you must use the latest main branch of fuse  and the daq-vanilla branch of
+straxen . Git clone fuse, which will automatically be the master branch, and then reference it for your
+imports instead of using the container installed version.
+import sys
+sys.path.insert(0, '/PATH/TO/fuse')
+As context you have to specify the following:
+st = fuse.context.xenonnt_fuse_full_chain_simulation(
+        output_folder=PATH_TO_SOME_DIRECTORY_OF_YOUR_LIKING,
+        corrections_version="global_v20",
+        simulation_config="sr3_dev",
+        clustering_method="lineage",
+        run_id_specific_config={
+          "gain_model_mc": "gain_model",
+          "electron_lifetime_liquid": "elife",
+          "drift_time_gate": "electron_drift_time_gate",}
+)
+st.set_config(
+    {
+--- Page 5 ---
+2026/06/10 18:19 5/5 Analysis Suggestions
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/        "efield_map": "constant_dummy_map://100", # Use flat 100 V/cm as
+drfit field.
+        'electron_drift_velocity': 0.00015,  # Set electron drift velocity
+in straxen
+        'z_bias_map':  "constant_dummy_map://0", # Remove z bias correction
+        'fdc_map':  "constant_dummy_map://0", # Remove fdc correction
+    }
+)
+The parameters in set_config  ensure that no spatial corrections and the correct electron drift
+velocity are used when building events. These preliminary settings can be used to study a ﬁrst rough
+peaklet building and classifcation with straxen. Once we know the ﬁnal ﬁeld conﬁguration the settings
+will be updated. If you want to adjust any of the parameters you have to change in addition to the
+conﬁgs above the following values:
+st.set_config(
+    {
+        "diffusion_constant_longitudinal": 2.5e-08, # Longitudinal diffusion
+in units of cm²/ns.
+        'drift_velocity_liquid': 0.00015,  # Set electron drift velocity in
+fuse (careful in the set config above we only adjust straxen)
+        'electron_extraction_yield':  0.8, # Relative electron extraction
+efficiency
+        's2_secondary_sc_gain':  42.5, # SE gain in pe/e
+    }
+)
+To ensure that your straxen and fuse are set up correctly you can run
+straxen.print_versions([“strax”, “straxen”, “fuse”])  which should return something
+similar to
+    module     version path
+git
+0   python     3.11.6     /opt/XENONnT/anaconda/envs/XENONnT_el8.2026.02...
+None
+1   strax     2.2.2     /home/dwenz/mymodules/strax/strax
+branch:unknown | bdc4728
+2   straxen 3.2.8     /home/dwenz/mymodules/straxen/straxen
+branch:daq-vanilla | ee950bb
+3   fuse     1.6.3     /scratch/midway3/dwenz/mymodules/fuse/fuse
+branch:main | 5f80c0e
+From:
+https://xe1t-wiki.lngs.infn.it/  - XENON1TWiki
+Permanent link:
+https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:org:recommissioning:data_start
+Last update: 2026/04/21 04:18

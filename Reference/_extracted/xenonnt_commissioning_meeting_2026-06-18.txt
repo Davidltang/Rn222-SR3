@@ -1,0 +1,96 @@
+--- Page 1 ---
+2026/07/25 20:06 1/5 XENONnT commissioning meeting– 2026-06-18
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/XENONnT commissioning meeting–
+2026-06-18
+Zoom  Password: let-me-in
+Agenda
+1. News from Operations Manager + Run Coordinator (Petr, Ekaterina)
+LXe PUR : Q5 is installed, post-ﬁlter measurements are planned for PM calibration (more likely
+on Friday).
+TPC-Electrodes : Electrodes tests are being performed: reached stable BSR=-3.4kV,
+Cath=-20.0kV, topFSR=-2kV, Gate=-2kV, Anode=+4kV, TSR=-460V. Tried today to reach -23 kV
+on cathode, tripping occured. Thanks to Luisa PMTs are back, but need some time to fully
+recover.
+TPC-PMTs : HV test was successfully performed on Monday. Additional test with diﬀerent
+voltages on top stack is planned on next Monday (22th June).
+TPC-Other : Change of liquid level is planned on Friday to let detector stabilize during
+weekends. Also ﬁrst batch of Kr83m calibrations is planned today or tomorrow.
+DAQ : New power supply installed yesterday, boards installed today. Normal tpc_background
+mode runs (not tpc_background_low_energy) are being taken since today.
+muVeto/nVeto : All is stable, new Gd insertion is planned on next Monday (22th June). There
+was an issue with Gd plant, but turned out it's basically because of diﬀerent emergency alarm
+buttons, all is ﬁxed now thanks to Mattia and Angelica. Stefano works on ﬁxing few not working
+NV channels.
+DST/RAD : DST is online.
+schedule page
+2. DQM (Caio)
+Github repo: https://github.com/XENONnT/data-quality-management
+Plots saved in: “/project2/lgrandi/dataquality/plots”
+More plots (7 days and 30 days plots) in:
+https://xenonnt.slack.com/archives/C064APR05EH/p1781761338031219
+--- Page 2 ---
+Last
+update:
+2026/06/18
+15:56xenon:xenonnt:dsg:nt:bi_weekly:20260618 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260618
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/07/25 20:06
+Fig. 1: This week's DQM plot (15 days)
+--- Page 3 ---
+2026/07/25 20:06 3/5 XENONnT commissioning meeting– 2026-06-18
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/3. Activities:
+CRY/LXePUR
+MV & NV
+
+--- Page 4 ---
+Last
+update:
+2026/06/18
+15:56xenon:xenonnt:dsg:nt:bi_weekly:20260618 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260618
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/07/25 20:06New GdSO insertion next week
+The plan agered in the NV group is to increase the concentration by a factor of 5 with respect to
+the SR2 (and current) value, reaching 2500 ppm (compared to the current 500 ppm).
+At this concentration, from MC simulations we expect to achieve
+a neutron tagging eﬃciency of about 83%,
+with an average capture time of about 30 μs.
+This approach allows us to keep roughly half of the available Gd salt in reserve as a
+precautionary measure, with the possibility of adding it at a later stage —for instance during the
+usual yearly maintenance of the cryogenic plants—if everything proceeds smoothly.
+The foreseen performance at 5000 ppm is only marginally better than at 2500 ppm:
+neutron tagging eﬃciency: 85%
+average neutron capture time: 20 μs
+The salt insertion can start next Monday, June 22. The operation should take about 10 days to
+complete, followed by approximately 10 additional days to achieve a uniform concentration
+throughout the WT.
+In this way, by mid-July we should have the NV ready in the SR3 conﬁguration.
+GdSO Concentration
+(ppm)n-tagging eﬀ (from
+MC)n-reduction factor
+(compared to without NV)average capture
+time (us)
+0 53% 2.1 170
+500 77% 4.3 75
+2500 83% 5.9 30
+5000 85% 6.7 20
+Slow Control (Mahmoud)
+DAQ (Andrew)
+The power supply on the crate was replaced yesterday. This was left running overnight and was
+--- Page 5 ---
+2026/07/25 20:06 5/5 XENONnT commissioning meeting– 2026-06-18
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/stable.
+This morning we re-inserted the TPC High energy boards and now running with all boards again.
+Now we are back at 'science run' data taking conditions. Will monitor stability/crashes over the
+next few days.
+TPC/Electrodes
+Krypton and Radon distillation (Lutz)
+Online Krypton distillation was started after Q5 installation on 12.06.2026 around 6pm
+Currently at stable ﬂow of 3slpm, we plan to increase to ~5slpm in the coming days when no
+important operation are performed
+Oﬀgas bottle will be ﬁlled around beginning of September (with 0.05 slpm oﬀgas speed) -
+removed 40kg from the global system
+Recuperation bottles were emptied as much as possible but recuperation system gas lines need
+to be recuperated in the coming weeks
+From:
+https://xe1t-wiki.lngs.infn.it/  - XENON1TWiki
+Permanent link:
+https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260618
+Last update: 2026/06/18 15:56

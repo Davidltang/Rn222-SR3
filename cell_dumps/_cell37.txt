@@ -1,0 +1,1 @@
+df_fits = fit_all_runs(runs_sr3, rn_events)

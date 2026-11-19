@@ -1,0 +1,168 @@
+# ═══════════════════════════════════════════════════════════════
+# CORRECTION 1a: Rn-222 Band Fitting in Area vs AFT
+# ═══════════════════════════════════════════════════════════════
+# Two-step process:
+#   1. Initial fit using manual exp_bump_model boundaries
+#   2. Refine: select Rn band as VERTICAL cut (±1σ) in area_aft_corrected,
+#      re-fit exp_bump_model to the improved selection.
+# Correction is applied to the FULL d_cor afterwards (in 1b).
+
+d_cor = df_cut.copy()
+
+# ── Fit region: restrict AFT to avoid edges ──
+aft_fit_min, aft_fit_max = 0.12, 0.55
+mask_fit_region = (
+    (d_cor['area_fraction_top'] >= aft_fit_min) &
+    (d_cor['area_fraction_top'] <= aft_fit_max)
+)
+d_fit = d_cor.loc[mask_fit_region].copy()
+print(f'Events in fit AFT range [{aft_fit_min}, {aft_fit_max}]: {len(d_fit):,}')
+
+# ═══════════════════════════════════════════════════════════════
+# STEP 1: Initial fit with manual exp_bump_model boundaries
+# ═══════════════════════════════════════════════════════════════
+
+rn_upper_pars = [8.86e+04, -0.0600, -0.0900, -0.0600, 68000]
+rn_lower_pars = [7.30e+04, -0.0600, -0.0900, -0.0600, 58000]
+
+d_fit['in_rn_band_manual'] = (
+    (d_fit['area'] < exp_bump_model(d_fit['area_fraction_top'], *rn_upper_pars)) &
+    (d_fit['area'] > exp_bump_model(d_fit['area_fraction_top'], *rn_lower_pars))
+)
+print(f'Events in Rn band (manual boundaries): {d_fit["in_rn_band_manual"].sum():,}')
+
+# ── Bin & fit (initial pass) ──
+n_aft_bins = 50
+aft_edges = np.linspace(aft_fit_min, aft_fit_max, n_aft_bins + 1)
+d_fit['aft_bin'] = pd.cut(d_fit['area_fraction_top'], bins=aft_edges)
+
+medians_rn_init = (
+    d_fit[d_fit['in_rn_band_manual']]
+    .groupby('aft_bin', observed=True)['area']
+    .median()
+)
+aft_c_init = medians_rn_init.index.map(lambda iv: iv.mid).astype(float).values
+m_vals_init = medians_rn_init.values
+good_init = ~np.isnan(m_vals_init)
+aft_c_init, m_vals_init = aft_c_init[good_init], m_vals_init[good_init]
+
+p0_rn = [3.70e4, -8.97e-2, -0.1, -0.05, 35e3]
+p_opt_init, _ = curve_fit(
+    exp_bump_model, aft_c_init, m_vals_init,
+    p0=p0_rn,
+    bounds=([0, -np.inf, -np.inf, -np.inf, 0], [np.inf, 0, 0, 0, np.inf]),
+    maxfev=10000
+)
+print(f'Initial fit done.  a={p_opt_init[0]:.0f}  b={p_opt_init[1]:.4f}  '
+      f'c={p_opt_init[2]:.4f}  d={p_opt_init[3]:.4f}  e={p_opt_init[4]:.0f}')
+
+# ═══════════════════════════════════════════════════════════════
+# STEP 2: Refine — vertical band in area_aft_corrected (±1σ)
+# ═══════════════════════════════════════════════════════════════
+
+aft_ref = 0.30
+N_SIGMA = 1.0
+
+# Compute initial area_aft_corrected for band definition
+area_ref_init = exp_bump_model(aft_ref, *p_opt_init)
+d_fit['area_aft_corrected_temp'] = (
+    d_fit['area'] * area_ref_init
+    / exp_bump_model(d_fit['area_fraction_top'], *p_opt_init)
+)
+
+# Find μ, σ of corrected area for initial Rn-band events
+rn_init = d_fit[d_fit['in_rn_band_manual']]
+mu_rn = rn_init['area_aft_corrected_temp'].mean()
+sig_rn = rn_init['area_aft_corrected_temp'].std()
+
+print(f'\nInitial Rn band in corrected space: μ = {mu_rn:.0f} PE, σ = {sig_rn:.0f} PE')
+print(f'Vertical band (±{N_SIGMA}σ): [{mu_rn - N_SIGMA*sig_rn:.0f}, {mu_rn + N_SIGMA*sig_rn:.0f}] PE')
+
+# Redefine Rn band as VERTICAL cut in area_aft_corrected
+d_fit['in_rn_band'] = (
+    abs(d_fit['area_aft_corrected_temp'] - mu_rn) < N_SIGMA * sig_rn
+)
+print(f'Events in Rn band (vertical ±{N_SIGMA}σ): {d_fit["in_rn_band"].sum():,}')
+
+# ── Re-bin & re-fit with improved selection ──
+medians_rn = (
+    d_fit[d_fit['in_rn_band']]
+    .groupby('aft_bin', observed=True)['area']
+    .median()
+)
+aft_centers = medians_rn.index.map(lambda iv: iv.mid).astype(float).values
+median_values = medians_rn.values
+good_rn = ~np.isnan(median_values)
+aft_c_rn, m_vals_rn = aft_centers[good_rn], median_values[good_rn]
+
+print(f'AFT bins with Rn data (refined): {len(aft_c_rn)}')
+
+# Fit exp_bump_model to refined medians
+p_opt_rn, p_cov_rn = curve_fit(
+    exp_bump_model, aft_c_rn, m_vals_rn,
+    p0=p_opt_init,
+    bounds=([0, -np.inf, -np.inf, -np.inf, 0], [np.inf, 0, 0, 0, np.inf]),
+    maxfev=10000
+)
+p_err_rn = np.sqrt(np.diag(p_cov_rn))
+
+print(f'\n=== Rn-222/220 BAND FIT (REFINED) ===')
+for name, val, err in zip(['a','b','c','d','e'], p_opt_rn, p_err_rn):
+    print(f'  {name} = {val:.6e} ± {err:.6e}')
+
+# ── Store vertical band bounds for downstream use ──
+rn_band_lo = mu_rn - N_SIGMA * sig_rn
+rn_band_hi = mu_rn + N_SIGMA * sig_rn
+
+# ═══════════════════════════════════════════════════════════════
+# PLOT: 2-panel — (left) Raw Area vs AFT + fit  (right) area_aft_corrected vs AFT + vertical band
+# ═══════════════════════════════════════════════════════════════
+
+fig, axes = plt.subplots(1, 2, figsize=(18, 7))
+aft_fine = np.linspace(0.10, 0.60, 500)
+
+# Left: Raw Area vs AFT with initial & refined fits
+ax = axes[0]
+h = ax.hist2d(
+    d_fit['area'], d_fit['area_fraction_top'],
+    bins=[300, 300], range=[[20e3, 100e3], [0.1, 0.6]],
+    cmin=1, norm=matplotlib.colors.LogNorm()
+)
+cbar = plt.colorbar(h[3], ax=ax, label='Counts')
+ax.plot(exp_bump_model(aft_fine, *rn_upper_pars), aft_fine,
+        '--', color='cyan', lw=1.5, alpha=0.6, label='Manual boundaries (init)')
+ax.plot(exp_bump_model(aft_fine, *rn_lower_pars), aft_fine,
+        '--', color='cyan', lw=1.5, alpha=0.6)
+ax.plot(exp_bump_model(aft_fine, *p_opt_rn), aft_fine,
+        '-', color='yellow', lw=3, label='Refined centerline')
+ax.plot(m_vals_rn, aft_c_rn, 'o', color='lime', markersize=6,
+        label=f'Medians refined ({len(aft_c_rn)} bins)', zorder=5)
+ax.set_xlabel('Area [PE]', fontsize=12)
+ax.set_ylabel('Area Fraction Top', fontsize=12)
+ax.set_title('Raw Area vs AFT — Fit + Manual Boundaries', fontsize=13)
+ax.legend(fontsize=9, loc='lower right')
+ax.grid(True, alpha=0.2)
+
+# Right: AFT-corrected Area vs AFT with vertical band boundaries
+ax = axes[1]
+h = ax.hist2d(
+    d_fit['area_aft_corrected_temp'], d_fit['area_fraction_top'],
+    bins=[300, 300], range=[[20e3, 100e3], [0.1, 0.6]],
+    cmin=1, norm=matplotlib.colors.LogNorm()
+)
+plt.colorbar(h[3], ax=ax, label='Counts')
+ax.axvline(x=mu_rn, color='yellow', lw=2, alpha=0.6, label=f'μ = {mu_rn:.0f} PE')
+ax.axvline(x=rn_band_lo, color='cyan', ls='--', lw=2,
+           label=f'±{N_SIGMA}σ  [{rn_band_lo:.0f}, {rn_band_hi:.0f}] PE')
+ax.axvline(x=rn_band_hi, color='cyan', ls='--', lw=2)
+ax.set_xlabel('AFT-Corrected Area [PE]', fontsize=12)
+ax.set_ylabel('Area Fraction Top', fontsize=12)
+ax.set_title(f'area_aft_corrected vs AFT — Vertical Band (±{N_SIGMA}σ)', fontsize=13)
+ax.legend(fontsize=9)
+ax.grid(True, alpha=0.2)
+
+safe_tight(fig)
+plt.show()
+
+print(f'\nRn band (vertical, ±{N_SIGMA}σ): [{rn_band_lo:.0f}, {rn_band_hi:.0f}] PE')
+print(f'Reference AFT: {aft_ref}')

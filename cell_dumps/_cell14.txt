@@ -1,0 +1,100 @@
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║  DATA LOADING — event_info with basic cuts, alpha ROI filter post-load       ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
+PICKLE_PATH = "/project2/lgrandi/jietang/sr3_commissioning/sr3_s1s2_event_info.pkl"
+
+# Try reloading cached data first (User: remove this loading cached data since I need to re-load with the new run selection and configuration, will save after we get the final df)
+df = None
+if os.path.exists(PICKLE_PATH):
+    print(f"Loading cached data from {PICKLE_PATH} ...")
+    df = pd.read_pickle(PICKLE_PATH)
+    print(f"Loaded {len(df):,} events, {df['run_number'].nunique()} runs")
+    print(f"Columns: {list(df.columns)}")
+else:
+    print("No cached data found. Loading event_info from strax...")
+
+    # Columns to load from event_info
+    columns_to_keep = [
+        'time', 'endtime',
+        's1_area', 's2_area',
+        's1_area_fraction_top',
+        's1_range_50p_area', 's2_range_50p_area',
+        'drift_time',
+        'alt_s1_area',
+        'x', 'y', 'z',
+        'cs1', 'cs2',
+        's1_time_diff',
+    ]
+
+    all_runs = run_id_sr3
+    frames = []
+    runs_loaded = 0
+    runs_failed = 0
+
+    for this_run in tqdm(all_runs):
+        this_run_name = this_run if isinstance(this_run, str) else f"{this_run:06d}"
+
+        if not st.is_stored(this_run_name, "event_info"):
+            runs_failed += 1
+            continue
+
+        try:
+            run_df = st.get_df(
+                this_run_name,
+                'event_info',
+                progress_bar=False,
+                #selection_str='cuts_basic',  # basic quality + single-scatter cuts
+            )
+        except Exception as e:
+            runs_failed += 1
+            if runs_failed <= 3:
+                print(f"Failed on {this_run_name}: {e}")
+            continue
+
+        if len(run_df) == 0:
+            continue
+
+        # Keep only available columns
+        available = [c for c in columns_to_keep if c in run_df.columns]
+        run_df = run_df[available].copy()
+        run_df['run_number'] = int(this_run_name)
+
+        # ── Post-load: keep only high-S1 events (alpha ROI) ──
+        run_df = run_df[run_df['s1_area'] > 15000]
+
+        frames.append(run_df)
+        runs_loaded += 1
+
+    print(f"Runs loaded: {runs_loaded}, failed: {runs_failed}")
+
+    if frames:
+        df = pd.concat(frames, ignore_index=True)
+        print(f"Total alpha-candidate events: {len(df):,}")
+
+        # Ensure run_number is int
+        df['run_number'] = df['run_number'].astype(int)
+
+        # Compute derived quantities
+        if 'x' in df.columns and 'y' in df.columns:
+            df['r2'] = df['x']**2 + df['y']**2
+            df['r'] = np.sqrt(df['r2'])
+        else:
+            print("WARNING: x/y position columns not found in event_info!")
+
+        # Save for re-use
+        df.to_pickle(PICKLE_PATH)
+        print(f"Saved to {PICKLE_PATH}")
+    else:
+        print("ERROR: No data loaded!")
+        df = None
+
+# Quick-look at loaded data
+if df is not None:
+    print(f"Loaded data summary:")
+    print(f"  Events: {len(df):,}")
+    print(f"  Runs: {df['run_number'].nunique()}")
+    print(f"  s1_area range: [{df['s1_area'].min():.0f}, {df['s1_area'].max():.0f}] PE")
+    print(f"  s2_area range: [{df['s2_area'].min():.0f}, {df['s2_area'].max():.0f}] PE")
+    if 'z' in df.columns:
+        print(f"  z range: [{df['z'].min():.1f}, {df['z'].max():.1f}] cm")

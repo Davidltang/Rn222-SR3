@@ -1,0 +1,121 @@
+# ═══════════════════════════════════════════════════════════════
+# 1D CORRECTED SPECTRUM — wide range for multi-peak fit
+# ═══════════════════════════════════════════════════════════════
+# Use ALL events after cuts and corrections.
+# Split by date boundary to check for rate changes.
+
+CUTOFF_DATE = '2026-06-08'
+
+rn_events = d_cor_aft.copy()
+print(f'Events for rate analysis (after all cuts + corrections): {len(rn_events):,}')
+
+# ── Split by date ──
+boundary_ns = np.datetime64(CUTOFF_DATE).astype('datetime64[ns]').astype('int64')
+mask_before = rn_events['time'] < boundary_ns
+mask_after  = rn_events['time'] >= boundary_ns
+print(f'Before {CUTOFF_DATE}: {mask_before.sum():,} events')
+print(f'After  {CUTOFF_DATE}: {mask_after.sum():,} events')
+
+# ── Peak positions from known alpha energies ──
+# Energies in MeV (NIST/ENSDF):
+E_RN222 = 5.49   # Rn-222
+E_PO218 = 6.00   # Po-218
+E_RN220 = 6.29   # Rn-220
+E_PO216 = 6.78   # Po-216
+E_PO214 = 7.69   # Po-214
+
+PEAK_NAMES   = ['Rn-222', 'Po-218', 'Rn-220', 'Po-216', 'Po-214']
+PEAK_ENERGIES = np.array([E_RN222, E_PO218, E_RN220, E_PO216, E_PO214])
+
+# ── Rn-222 anchor positions for before & after (tune these!) ──
+RN222_PEAK_POS_BEFORE = 52000
+RN222_PEAK_POS_AFTER  = 50700
+
+# Scale all peaks by energy ratio E / E_Rn222
+GUESS_MU_BEFORE = (RN222_PEAK_POS_BEFORE * PEAK_ENERGIES / E_RN222).astype(int)
+GUESS_MU_AFTER  = (RN222_PEAK_POS_AFTER  * PEAK_ENERGIES / E_RN222).astype(int)
+
+# Use 'before' guesses for the overview plot annotations
+GUESS_MU   = GUESS_MU_BEFORE
+GUESS_SIGMA = 800
+N_PEAKS     = len(PEAK_NAMES)
+
+print(f'Peak energies (MeV):')
+for name, e in zip(PEAK_NAMES, PEAK_ENERGIES):
+    print(f'  {name:10s}  {e:.2f} MeV  →  before: {GUESS_MU_BEFORE[PEAK_NAMES.index(name)]:,} PE  |  after: {GUESS_MU_AFTER[PEAK_NAMES.index(name)]:,} PE')
+
+# ── Histogram (split by date) ──
+fig, ax = plt.subplots(figsize=(16, 6))
+
+hist_range = [45e3, 80e3]
+hist_bins = 500
+
+# All events (light filled background)
+ax.hist(
+    rn_events['area_2_corrected'],
+    bins=hist_bins, range=hist_range,
+    color='lightgray', alpha=0.5,
+    label=f'All events ({len(rn_events):,})'
+)
+
+# Before 2026-04-22 (steelblue step)
+ax.hist(
+    rn_events.loc[mask_before, 'area_2_corrected'],
+    bins=hist_bins, range=hist_range,
+    histtype='step', color='steelblue', lw=2.5,
+    label=f'Before {CUTOFF_DATE} ({mask_before.sum():,} events)'
+)
+
+# After 2026-04-22 (darkorange step)
+ax.hist(
+    rn_events.loc[mask_after, 'area_2_corrected'],
+    bins=hist_bins, range=hist_range,
+    histtype='step', color='darkorange', lw=2.5,
+    label=f'After {CUTOFF_DATE} ({mask_after.sum():,} events)'
+)
+
+# Mark guess positions — steelblue=before, darkorange=after
+for mu, name in zip(GUESS_MU_BEFORE, PEAK_NAMES):
+    ax.axvline(x=mu, color='steelblue', ls='--', lw=1.5, alpha=0.6)
+    ax.annotate(name, xy=(mu, ax.get_ylim()[1]*0.95), fontsize=8,
+                color='steelblue', ha='center', fontweight='bold',
+                rotation=90, va='top')
+for mu, name in zip(GUESS_MU_AFTER, PEAK_NAMES):
+    ax.axvline(x=mu, color='darkorange', ls=':', lw=2, alpha=0.6)
+    ax.annotate(name, xy=(mu, ax.get_ylim()[1]*0.82), fontsize=8,
+                color='darkorange', ha='center', fontweight='bold',
+                rotation=90, va='top')
+
+ax.set_xlabel('AFT + r² Corrected Area [PE]', fontsize=12)
+ax.set_ylabel('Counts per bin', fontsize=12)
+#ax.set_yscale('log')
+ax.set_title(f'1D Corrected Spectrum — 5-Peak Region (split at {CUTOFF_DATE})', fontsize=14)
+ax.legend(fontsize=10, loc='upper right')
+ax.grid(True, alpha=0.3)
+safe_tight(fig)
+plt.show()
+
+# ── np.histogram for find_peaks (use all events) ──
+counts_rn, edges_rn = np.histogram(
+    rn_events['area_2_corrected'],
+    bins=hist_bins, range=hist_range
+)
+bin_centers_rn = 0.5 * (edges_rn[:-1] + edges_rn[1:])
+bin_width_rn = edges_rn[1] - edges_rn[0]
+
+# Find peak positions for initial guesses
+peaks_idx, peaks_props = find_peaks(counts_rn, height=counts_rn.max()*0.02, distance=15)
+peak_positions = bin_centers_rn[peaks_idx]
+peak_heights = counts_rn[peaks_idx]
+
+print(f'\nSpectrum range: {edges_rn[0]:.0f} – {edges_rn[-1]:.0f} PE')
+print(f'Bin width: {bin_width_rn:.1f} PE')
+print(f'Max bin count: {counts_rn.max():.0f}')
+print(f'Total counts in histogram: {counts_rn.sum():,.0f}')
+print(f'\nDetected peak positions (for reference):')
+for pos, height in sorted(zip(peak_positions, peak_heights), key=lambda x: x[1], reverse=True)[:10]:
+    print(f'  {pos:.0f} PE (height: {height:.0f})')
+
+print(f'\nInitial guesses for {N_PEAKS}-Gaussian fit:')
+for name, mu in zip(PEAK_NAMES, GUESS_MU):
+    print(f'  {name:10s}  μ₀ = {mu:,} PE')

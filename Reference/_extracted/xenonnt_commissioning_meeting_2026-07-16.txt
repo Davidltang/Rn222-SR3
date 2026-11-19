@@ -1,0 +1,184 @@
+--- Page 1 ---
+2026/07/25 19:53 1/6 XENONnT commissioning meeting– 2026-07-16
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/XENONnT commissioning meeting–
+2026-07-16
+Zoom
+Agenda
+1. News from Operations Manager + Run Coordinator (Petr)
+DAQ/SC system:
+The SCADA1 VM was successfully migrated to the new physical server. Many thanks to
+Hagar, Mahmoud and Zhaowei and all others involved for the excellent work performed!
+We are back to the regular controlled mode of operation or the CAEN HV power supplies.
+Thank you Hagar! TPC PMTs are ON, LED calibration is scheduled today at 17:00.
+Veto PMTs are ON (except of HV board #13, mVeto).
+LXe PUR:
+PM was re-calibrated, measured e-Lifetime is ~ 20 ms
+Accumulator status: SC work in progress. See SC group report.
+muVeto/nVeto:
+PMTs: currently are ON planing to perform AmBe calibration tomorrow.
+TPC:
+PMTs/Electrodes status: HVs are ON, LED calibration is planned later today. The bottom
+HV test was performed in the morning.
+General:
+Congratulations to Ekaterina successfully ﬁnished her 2-month RC term marathon! Thank
+you very much!
+Since yesterday we are allowed to use our oﬃces in HdM. AC is operating, Wiﬁ connection
+is still very poor (as before the remodeling).
+2. DQM (Caio)
+Github repo: https://github.com/XENONnT/data-quality-management
+Plots saved in: “/project2/lgrandi/dataquality/plots”
+More plots (7 days and 30 days plots) in:
+https://xenonnt.slack.com/archives/C064APR05EH/p1784173304419189
+--- Page 2 ---
+Last
+update:
+2026/07/16
+15:50xenon:xenonnt:dsg:nt:bi_weekly:20260716 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260716
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/07/25 19:53
+Fig. 1: This week's DQM plot (15 days)
+3. Activities:
+CRY/LXePUR
+MV & NV
+Neutron Veto is running again since this morning (all PMTs on, data taking restarted). The regular
+daily and weekly calibrations can be resumed.
+Muon Veto is also running again but with only 63 out of 84 PMTs. This is due to a problem on one of
+--- Page 3 ---
+2026/07/25 19:53 3/6 XENONnT commissioning meeting– 2026-07-16
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/the HV boards (board 13), for which we are not able to keep PMTs voltages at the desired value. We
+are in contact with CAEN for this, the board likely needs to be replaced (we have a spare one) and
+sent for repair. Important: this problem has nothing to do with the HV communication incident, it's
+unrelated.
+Slow Control (Mahmoud)
+SCADA server failure1.
+CAEN HV communication issues2.
+Accumulator status3.
+"SCADA1 is dead, long live SCADA1."
+The migration of SCADA1 to the new server was completed successfully by Zhaowei and
+Mahmoud, with help from Ekaterina and the shifters for the network mapping, testing, and ﬁnal
+rewiring.
+SCADA2 maintained the operational services  during the work, so alarms, screens, and the
+Historian continued running, apart from a few brief planned SCADA restarts.
+The only missing functionality while running on SCADA2 was the calibration-sequence
+script. This should already have been ﬁxed, but has not yet been tested.
+The migration was performed cold: SCADA1 was powered oﬀ, exported with OVF Tool as an
+OVA/OVF package, and imported into the new ESXi environment.
+Important milestone:  This validates the new hardware, the new virtualization environment,
+and our existing SCADA image. It was also the ﬁrst time we performed this type of migration
+ourselves, so we now have a tested procedure and know how to repeat it. We can therefore
+proceed with purchasing a similar server as the next standby host.
+For more information: SCADA1 Hardware Failure and Server Migration - July 2026
+Migration steps for future reference: SCADA1 Migration Steps
+Timeline*
+July 4, ~09:00:  The old SCADA1 host suﬀered a hardware failure. DIMM-2B was detected
+as failed, reducing the usable physical memory from 64 GB to 48 GB. The SCADA1 VM
+allocation was subsequently reduced from 60 GB to 44 GB so it could continue operating
+on the degraded host.
+July 7:  SCADA1 was running again in the reduced-memory conﬁguration, with SCADA2
+available as the redundancy backup. Hardware tests showed that the fault remained with
+DIMM slot 2B and did not follow the memory module, pointing to the slot, system board,
+or memory channel.
+July 9, ~12:00:  A further 16 GB memory reduction was observed on the old host. The
+SCADA1 VM total memory dropped from approximately 44 GB to 28 GB, increasing the
+urgency of the migration.
+July 12-13:  Zhaowei and Mahmoud prepared and tested the new server network
+conﬁguration. A cold OVA/OVF migration and rollback were tested successfully using the
+LaserSystem VM.
+July 14, ~08:00:  SCADA1 was shut down and SCADA2 took over the active SCADA
+services. The SCADA1 OVA export and migration began.
+July 14, ~17:15:  SCADA1 was brought back online on the new physical server with 60
+GB of VM memory.
+July 14, ~18:00:  SCADA1 was brieﬂy brought down and the old server was brought back
+--- Page 4 ---
+Last
+update:
+2026/07/16
+15:50xenon:xenonnt:dsg:nt:bi_weekly:20260716 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260716
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/07/25 19:53up to complete the license migration.
+July 14, ~18:10:  SCADA1 was returned to the new server. Applications, licenses, PAC
+and CAEN connectivity, Zabbix, the Historian, and NAS access were tested successfully.
+Many thanks to Zhaowei and Mahmoud  for preparing and carrying out the migration, and to
+Ekaterina and the shifters for the on-site support.
+HV communication incident - resolved
+The HV communication problem appeared spontaneously. It was not preceded by any change to
+the SC hardware, software, servers, network, or infrastructure.
+At the peak of the incident, 3 out of 4 SY4527 crates could not be accessed through
+GECO , and SCADA control was also aﬀected. Direct laptop tests reproduced the same failures
+while bypassing the SC network, showing that this was not caused by SCADA or the network
+infrastructure.
+On July 7, we had a productive Zoom call with CAEN. With their help, the crate ﬁrmware and
+HiVoCS software were upgraded, restoring direct communication through GECO.
+After the ﬁrmware upgrade, a second problem appeared: the existing OPC DA service could
+connect to all four crates at the network level, but it hung during initialization and did not start.
+This left SCADA without HV communication.
+On July 14, Andrew found the registry location where the OPC server retained its crate
+conﬁguration. Clearing and rebuilding this conﬁguration allowed the OPC DA service to start,
+and shortly afterward all HV communication returned.
+Important distinction:  the original crate communication failure happened before the ﬁrmware
+upgrade and remains unexplained. The later OPC problem was a separate
+installation/conﬁguration issue with the OPC DA service provided during the troubleshooting.
+In the future, we can move to OPC-UA, but this should be done as a planned and fully tested
+migration. We already had our own basic OPC-UA backup tested and available as a standby. The
+new OPC-UA server provided by CAEN during this incident was not tested, and its compatibility
+with Windows Server 2012 R2 is still unclear.
+For more information:
+https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:slowcontrol:hagar:HVcrate_july_2026
+Timeline*
+July 6:  Communication failures were conﬁrmed on CTPC, CMuV, and CNeV. CTPC2
+continued working. Ekaterina tested the crates directly with a laptop and reproduced the
+failures outside the SC network.
+July 7:  Zoom call with CAEN. Firmware and HiVoCS were upgraded on the crates. GECO
+communication was restored, but the existing OPC DA service no longer started.
+July 8-10:  Detailed diagnostics were sent to CAEN. The OPC process established network
+connections to all four crates but hung during initialization. Reinstallation, service
+upgrades, SCADA restarts, and server reboots did not solve it.
+Friday, July 10:  CAEN said they would provide an updated server early the following
+--- Page 5 ---
+2026/07/25 19:53 5/6 XENONnT commissioning meeting– 2026-07-16
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/week.
+Late July 13:  CAEN provided a new OPC-UA server. This was a diﬀerent technology and
+not a transparent replacement: using it would require reconﬁguring and validating the
+SCADA HV points. The CAEN OPC-UA server was therefore not tested immediately.
+Questions regarding the competability of the server with windows server 12 was
+submitted to CAEN.
+July 14:  Andrew located the registry containing the persistent OPC DA conﬁguration on
+windows. The old conﬁguration was cleared and rebuilt, the service started successfully,
+and communication with all four HV crates returned. So the server issue was a “small”
+installation-conﬁguration bump.
+July 15-16:  HV functionality conﬁrmed by TPC, MUV
+Many thanks to Ekaterina  for the direct underground tests, to Andrew  for the continuous follow-up
+with CAEN and for ﬁnding the registry, and to everyone who helped with the ﬁrmware upgrade,
+diagnostics, and testing.
+Accumulator control
+We received the technical details from Guillaume. The requested change has two parts:
+Filtering of the level signal used for valve control , so the valve does not react to short
+ﬂuctuations and noise.
+Adaptive pulsing of FV111 , where the valve opening time changes according to the
+measured level and system response.
+My suggestion is to start with the ﬁlter. It is the simpler and lower-risk part, and we should be able to
+implement it in the very near future. Once it is working and the ﬁltered signal is understood, we can
+move to the adaptive pulsing.
+Some follow-up questions were sent to Guillaume regarding the exact control logic, limits, timing,
+safety behavior, and required screens.
+At this stage, the change should not require stopping the PAC project. It will only require uploading
+the changes to the PAC and updating the EGD conﬁguration on both the PAC and SCADA sides.
+We also need a clear installation and testing plan. The main challenge is testing while the detector is
+running. We need to deﬁne what SC can test independently, what can be tested during installation,
+and what can only be tested during operation.
+DAQ (Andrew)
+TPC/Electrodes
+July 15: successfully tested functionality of high and low liquid level alarms on electrodes
+(forced trip of anode, no impact on other electrodes)
+July 16: ramping cathode to -17kV (intermediate step, log ﬁle ), to be continued tomorrow, July
+17
+--- Page 6 ---
+Last
+update:
+2026/07/16
+15:50xenon:xenonnt:dsg:nt:bi_weekly:20260716 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260716
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/07/25 19:53Krypton and Radon distillation (Lutz)
+4. Schedule:
+From:
+https://xe1t-wiki.lngs.infn.it/  - XENON1TWiki
+Permanent link:
+https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260716
+Last update: 2026/07/16 15:50

@@ -1,0 +1,106 @@
+# ═══════════════════════════════════════════════════════════════
+# CORRECTION 2: AFT vs r² — polynomial fit + correction
+# ═══════════════════════════════════════════════════════════════
+# Plot and fit in AFT (x) vs r² (y) space.
+# Use only events in the Correction 2 Rn-band (vertical cut in area_aft_corrected).
+# Fit: r²(AFT) = degree-N polynomial, then correct r² using the
+# fitted function (just like Correction 1 but for r² instead of area).
+
+aft_min, aft_max = 0.12, 0.55
+r2_min_aft, r2_max_aft = 0, 750
+POLY_DEG = 10
+
+# ── Select Rn-band events only ──
+mask_r2aft = (
+    (d_cor['r2'] >= r2_min_aft) & (d_cor['r2'] <= r2_max_aft) &
+    (d_cor['area_fraction_top'] >= aft_min) & (d_cor['area_fraction_top'] <= aft_max) &
+    (mask_corr2_rn)
+)
+d_r2aft = d_cor.loc[mask_r2aft].copy()
+print(f'Rn-band events in fit region: {len(d_r2aft):,}')
+print(f'  AFT range: [{d_r2aft["area_fraction_top"].min():.3f}, {d_r2aft["area_fraction_top"].max():.3f}]')
+print(f'  r² range:  [{d_r2aft["r2"].min():.1f}, {d_r2aft["r2"].max():.1f}]')
+
+# ── Bin in AFT (x-axis), get median r² (y-axis) ──
+n_aft_bins = 40
+aft_edges = np.linspace(aft_min, aft_max, n_aft_bins + 1)
+d_r2aft['aft_bin'] = pd.cut(d_r2aft['area_fraction_top'], bins=aft_edges)
+
+medians_r2 = d_r2aft.groupby('aft_bin', observed=True)['r2'].median()
+counts_r2  = d_r2aft.groupby('aft_bin', observed=True)['r2'].count()
+
+aft_c = medians_r2.index.map(lambda iv: iv.mid).astype(float).values
+r2_medians = medians_r2.values
+good_bins = counts_r2.values >= 20
+
+aft_fit_pts = aft_c[good_bins]
+r2_fit_pts  = r2_medians[good_bins]
+n_fit        = counts_r2.values[good_bins]
+
+print(f'AFT bins with ≥20 events: {len(aft_fit_pts)}')
+print(f'Median r² range: [{r2_fit_pts.min():.1f}, {r2_fit_pts.max():.1f}] cm²')
+
+# ── Fit: r²(AFT) = degree-N polynomial ──
+p0_poly = [np.median(r2_fit_pts)] + [0.0] * POLY_DEG
+popt_r2, pcov_r2 = curve_fit(polynomial, aft_fit_pts, r2_fit_pts, p0=p0_poly, maxfev=50000)
+perr_r2 = np.sqrt(np.diag(pcov_r2))
+
+print(f'\nDegree-{POLY_DEG} polynomial fit: r²(AFT)')
+print(f'  c₀ = {popt_r2[0]:.2f} ± {perr_r2[0]:.2f}')
+for i in range(1, min(6, POLY_DEG + 1)):
+    print(f'  c{i} = {popt_r2[i]:.4e} ± {perr_r2[i]:.4e}')
+print(f'  ... (total {POLY_DEG + 1} coefficients)')
+
+# ── Plot ──
+fig, axes = plt.subplots(1, 2, figsize=(14, 5.5))
+
+# Left: 2D histogram — AFT (x) vs r² (y), Rn-band only
+ax = axes[0]
+h = ax.hist2d(d_r2aft['area_fraction_top'], d_r2aft['r2'],
+              bins=[100, 100],
+              range=[[aft_min, aft_max], [r2_min_aft, r2_max_aft]],
+              cmin=1, norm=matplotlib.colors.LogNorm())
+plt.colorbar(h[3], ax=ax, label='Counts')
+aft_fine = np.linspace(aft_min, aft_max, 200)
+ax.plot(aft_fine, polynomial(aft_fine, *popt_r2), 'r-', lw=2, label=f'Poly degree {POLY_DEG}')
+ax.set_xlabel('Area Fraction Top')
+ax.set_ylabel('r² [cm²]')
+ax.set_title('AFT vs r² (Corr.2 Rn-band [40k-45k PE])')
+ax.legend(fontsize=9)
+ax.grid(True, alpha=0.2)
+
+# Right: Median r² vs AFT with fit
+ax = axes[1]
+ax.errorbar(aft_fit_pts, r2_fit_pts,
+            yerr=np.sqrt(np.maximum(r2_fit_pts, 1))/np.sqrt(n_fit),
+            fmt='o', capsize=3, color='steelblue', label='Median r² per AFT bin')
+ax.plot(aft_fine, polynomial(aft_fine, *popt_r2), 'r-', lw=2, label=f'Poly degree {POLY_DEG}')
+ax.set_xlabel('Area Fraction Top')
+ax.set_ylabel('Median r² [cm²]')
+ax.set_title('AFT vs r² — Median Binned with Polynomial Fit')
+ax.legend(fontsize=9)
+ax.grid(True, alpha=0.3)
+
+safe_tight(fig)
+plt.show()
+
+# ═══════════════════════════════════════════════════════════════
+# APPLY CORRECTION 2: correct r² against AFT (ALL events)
+# ═══════════════════════════════════════════════════════════════
+# Normalize r² to the reference AFT using the fitted polynomial.
+# No clipping — the polynomial is well-behaved and the large
+# correction factors at AFT edges are physically expected.
+#
+#   r2_aft_corrected = r² * r2_at_ref / poly(AFT)
+
+r2_at_ref_aft = polynomial(aft_ref, *popt_r2)   # expected r² at reference AFT
+print(f'\nReference AFT: {aft_ref}')
+print(f'Expected r² at AFT={aft_ref}: {r2_at_ref_aft:.1f} cm²')
+
+cf_r2aft = r2_at_ref_aft / polynomial(d_cor['area_fraction_top'].values, *popt_r2)
+
+d_cor['r2_aft_corrected'] = d_cor['r2'] * cf_r2aft
+d_cor['corr2_factor'] = cf_r2aft
+
+print(f'Correction 2 factor range: [{cf_r2aft.min():.4f}, {cf_r2aft.max():.4f}]')
+print(f'Correction 2 applied to all {len(d_cor):,} events — new column: r2_aft_corrected')

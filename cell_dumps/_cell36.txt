@@ -1,0 +1,102 @@
+# ═══════════════════════════════════════════════════════════════
+# PLOT FIT SPECTRUM — inspect any run's fit
+# ═══════════════════════════════════════════════════════════════
+# Call with just the run ID. Reads rn_events, runs_sr3 from notebook.
+
+def plot_run_fit(run_name, guess_mu=None, fit_min=None):
+    """
+    Plot histogram + 5-Gaussian fit for one run.
+
+    Parameters
+    ----------
+    run_name : str — e.g. '078900'
+    guess_mu : array (default: GUESS_MU from notebook)
+    fit_min : float (default: FIT_MIN from notebook)
+
+    Uses from notebook scope: rn_events, runs_sr3
+    """
+    if guess_mu is None:
+        guess_mu = GUESS_MU
+    if fit_min is None:
+        fit_min = FIT_MIN
+
+    # ── Look up the run ──
+    rrow = runs_sr3[runs_sr3['name'] == run_name]
+    if len(rrow) == 0:
+        print(f'Run {run_name} not found in runs_sr3')
+        return None
+
+    rrow = rrow.iloc[0]
+    t0 = int(rrow['start_s'] * 1e9)
+    t1 = int(float(rrow['end'].timestamp()) * 1e9)
+    evts = rn_events[(rn_events['time'] >= t0) & (rn_events['time'] < t1)]
+
+    # ── Fit ──
+    res = fit_one_run(evts, guess_mu, fit_min, label=run_name)
+    p_fit = res['p_fit']
+
+    # ── Plot ──
+    n_bins = res['n_bins'] if res['n_bins'] > 0 else 500
+
+    fig, ax = plt.subplots(figsize=(16, 7))
+
+    ax.hist(evts['area_2_corrected'], bins=n_bins, range=[45e3, 80e3],
+            color='steelblue', alpha=0.5, label=f'Data ({len(evts)} evts)')
+
+    x_fine = np.linspace(45e3, 80e3, 2000)
+    peak_colors = plt.cm.tab10(np.linspace(0, 1, N_PEAKS))
+
+    if p_fit is not None:
+        for i in range(N_PEAKS):
+            amp, mu, sig = p_fit[3*i], p_fit[3*i+1], p_fit[3*i+2]
+            g = amp * np.exp(-0.5 * ((x_fine - mu) / sig)**2)
+            ax.plot(x_fine, g, '--', color=peak_colors[i], lw=1.5, alpha=0.7,
+                    label=f'{PEAK_NAMES[i]}  mu={mu:.0f}  sig={sig:.0f}')
+            # +-2sigma window
+            ax.axvspan(mu - 2*sig, mu + 2*sig, color=peak_colors[i], alpha=0.06)
+
+        y_tot = multi_gaussian(x_fine, *p_fit)
+        ax.plot(x_fine, y_tot, 'r-', lw=2.5, label='Total fit')
+        ax.axhline(y=p_fit[-1], color='gray', ls=':', lw=1.5,
+                   label=f'bg = {p_fit[-1]:.1f}')
+
+    # Initial guess markers
+    for mu0, nm in zip(guess_mu, PEAK_NAMES):
+        ax.axvline(x=mu0, color='gray', ls=':', lw=0.8, alpha=0.4)
+
+    ax.set_xlabel('AFT + r^2 Corrected Area [PE]', fontsize=12)
+    ax.set_ylabel('Counts per bin', fontsize=12)
+    ok_str = 'OK' if res['success'] else 'FAILED'
+    ax.set_title(f'Run {run_name}  |  fit: {ok_str} ({res["status"]})  |  '
+                 f'{len(evts)} events  |  {n_bins} bins',
+                 fontsize=13)
+    ax.legend(fontsize=7, ncol=2, loc='upper right')
+    ax.grid(True, alpha=0.3)
+    safe_tight(fig)
+    plt.show()
+
+    # ── Print table ──
+    if p_fit is not None:
+        print(f'\n{"="*70}')
+        print(f'  Run {run_name} — Fitted Parameters')
+        print(f'{"="*70}')
+        print(f'{"Peak":10s} {"mu [PE]":>12s} {"sig [PE]":>10s} {"Amp":>10s} {"sig/mu":>8s}')
+        print(f'{"-"*70}')
+        for i in range(N_PEAKS):
+            amp, mu, sig = p_fit[3*i], p_fit[3*i+1], p_fit[3*i+2]
+            print(f'{PEAK_NAMES[i]:10s} {mu:10.0f} {sig:10.0f} {amp:10.0f} {100*sig/mu:7.2f}%')
+        print(f'{"bg":10s} {"-":>12s} {"-":>10s} {p_fit[-1]:10.1f}')
+        print(f'{"="*70}')
+
+    return res
+
+
+print('plot_run_fit() defined.')
+print()
+print('# Usage — just the run ID:')
+print('#   plot_run_fit("078900")')
+print('#   plot_run_fit("079200")')
+print()
+print('# Pick a random successful run:')
+print('#   ok = df_fits[df_fits["success"]]["run"].values')
+print('#   if len(ok): plot_run_fit(np.random.choice(ok))')

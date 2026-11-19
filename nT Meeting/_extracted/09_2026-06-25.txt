@@ -1,0 +1,192 @@
+--- PAGE 1 ---
+2026/07/25 19:53 1/9 XENONnT commissioning meeting– 2026-06-25
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/XENONnT commissioning meeting–
+2026-06-25
+Zoom
+Agenda
+1. News from Operations Manager + Run Coordinator (Petr, Ekaterina)
+TPC:
+Kr83m calibration was successfully performed on June 19-21.
+PMTs status: LED calibrations at diﬀerent electrode voltages was performed on Tuesday
+June 23.
+Electrodes status: Top stack voltage diﬀerence of +8.0 kV was successfully achieved for 4
+mm LXe level (Anode + 4.25 kV; Gate -3.75 kV). Maximal cathode voltage achieved was
+almost -23 kV when BSR and gate, then also cathode tripped. TPC operated stably
+overnight with the Cathode at -20.0 kV. Yesterday new test was performed, with
+conﬁguration BSR=-2.5kV, Cath=-12.0kV, topFSR=-3.5kV, Gate=-3.5kV, Anode=+4.5kV,
+TSR=-340V, and tripping occured at night. Today's conﬁguration is BSR=-2.5kV,
+Cath=-12.0kV, topFSR=-2kV, Gate=-2kV, Anode=+4kV, TSR=-460V for now.
+TPC liquid level was gradually increased from 4 to 5 mm on June 20. Level was stabilized
+on June 21. Today LL was increased by 0.7 mm (to 5.7 mm) due to the problem with some
+CRYO valve (Federico). Decided to use that occasion for additional Kr83m data collection
+until that meeting.
+muVeto/nVeto:
+PMTs: Operating stably;
+Calibration: New AmBe calibration performed on June 23
+GSO loading: Gd salt loading re-started on June 22. Currently ~1650 kg of GdSO were
+loaded (more info from Marco).
+LXe PUR:
+Q5 ﬁlter status:Q5 was successfully installed and is operating now. According to Kr83m
+calibration preliminary results the e-Lifetime is ~ 5-6 ms.
+Change to ST707?
+CRYO/PUR:  Stable operation
+DAQ:
+Data are taking stably.
+SC system:  There was an issue with the SCADA access (interruption of the communications
+between SCADA and WebSpace servers) on Monday June 22. The SCADA itself was operating
+ﬁne. Problem was resolved by restarting SCADA/WebSpace servers.
+DST/RAD:
+Status of the DST: Online Kr distillation started on June 5 ~18:00;
+Status of RAD: In Standby mode.
+Fast-response:  Quick analysis were performed for the Kr83m calibration data (Top stack HV
+diﬀerence - +7.0 kV, Cathode at - -16.0 kV). Very preliminary results: source counting rate
+(PMTs) max ~100 Hz; extraction eﬃciency ~57% (for 4 mm LXe level) and 61% (for 5 mm),
+measured e-Lifetime ~ 5.7(6.3) ms.
+
+--- PAGE 2 ---
+Last
+update:
+2026/06/25
+16:09xenon:xenonnt:dsg:nt:bi_weekly:20260625 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260625
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/07/25 19:532. DQM (Caio)
+Github repo: https://github.com/XENONnT/data-quality-management
+Plots saved in: “/project2/lgrandi/dataquality/plots”
+More plots (7 days and 30 days plots) in:
+https://xenonnt.slack.com/archives/C064APR05EH/p1782370591055449
+
+--- PAGE 3 ---
+2026/07/25 19:53 3/9 XENONnT commissioning meeting– 2026-06-25
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/
+Fig. 1: This week's DQM plot (15 days)
+3. Activities:
+
+--- PAGE 4 ---
+Last
+update:
+2026/06/25
+16:09xenon:xenonnt:dsg:nt:bi_weekly:20260625 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260625
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/07/25 19:53CRY/LXePUR
+CRY LXe accumulator
+New control valve was being welded yesterday, being sent for electropolishing today
+Delivery expected next week
+MV & NV
+
+
+--- PAGE 5 ---
+2026/07/25 19:53 5/9 XENONnT commissioning meeting– 2026-06-25
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/
+
+
+--- PAGE 6 ---
+Last
+update:
+2026/06/25
+16:09xenon:xenonnt:dsg:nt:bi_weekly:20260625 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260625
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/07/25 19:53
+Gadolinium insertion operations (Filippo) :
+gd_insertion_operations_22_06-26_06
+Slow Control (Mahmoud)
+SCADA viewer issues:
+TL;DR:  On Monday, the SCADA WebSpace interface on the webserver intermittently stopped
+updating due to a communication/domain-access issue with the SCADA server, while SCADA,
+Historian, and the local Viewer continued working normally; a short SCADA restart the next day
+seems to have resolved it.
+
+--- PAGE 7 ---
+2026/07/25 19:53 7/9 XENONnT commissioning meeting– 2026-06-25
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/On Monday (22/6/2026), users reported that the SCADA WebSpace screens on the webserver turned
+black or showed stale/no data. SCADA itself was working ﬁne the entire time, and so were the
+Historian and the local Viewer, so this was not a SCADA failure but a problem with the SCADA
+WebSpace interface on the webserver. The issue happened shortly after a failed attempt to run the
+calibration sequences screen, which crashed in an unusual way, possibly due to an expired DAQ API
+key on the HYL account. The causality is not fully established, but the failed script may have
+triggered or exposed a service-level issue that aﬀected communication/authentication/permissions
+between the SCADA server and the WebSpace server, possibly connected to domain-based access
+between the two machines. In practice, this caused the webserver to intermittently stop receiving or
+updating project-level values properly. A quick service restart solved it temporarily, but the issue
+later returned. Around 13:50 the following day, we performed a quick SCADA restart, which took
+about 2 minutes, and this seems to have resolved the issue fully for now.
+Alarm notiﬁcation update:
+The new alarm notiﬁcation code is deployed since 23/06/2026 at 11:46.
+In short: alarms repeating again with the same severity and title within a time window, currently
+set to 10 minutes, are suppressed from notiﬁcations. A “ﬂood warning” is notiﬁed to shifters
+and on the slack-notiﬁcation channel. All alarms are still sent to the slack-uncensored channel
+(more details here) .
+Since deployed:
+124 alarms were sent to all notiﬁcation channels: email, SMS, and Slack.
+84 alarms were suppressed from all notiﬁcation channels: email, SMS, and Slack.
+51 “ﬂood warning” messages were generated, each reporting 1 suppressed repeated
+alarm.
+Case study - WLP037 level alarm suppression:
+WLP037 Level gl1_mxt.ALM.alarm Hi
+Trigger
+time11:58:38 11:59:18 12:00:00 12:00:32 12:00:54 12:20:29 12:20:38 12:20:45 12:21:58 12:23:18
+New
+notiﬁcation
+behavioremail +
+sms sentSuppressed Suppressed Suppressed Suppressedemail +
+sms sentSupressed Supressed Supressed Supressed
+MeaningFirst
+triggerRepeat
+inside 10
+min
+windowRepeat Repeat RepeatRe-trigger
+after
+windowRepeat Repeat Repeat Repeat
+DAQ020 The DAQ Data Rate is more than 30.000000 MB/s for 3 min
+Trigger
+time14:11:30 14:16:01 14:20:03 14:24:02 14:31:00 14:35:30 14:39:31 14:44:00 14:49:31 15:54:01
+New
+notiﬁcation
+behavioremail +
+sms sentSuppressed Suppressedemail +
+sms sentSuppressedemail +
+sms sentSuppressed Suppressedemail +
+sms sentemail +
+sms sent
+MeaningFirst
+triggerRepeat
+inside 10
+min
+windowRepeat Re-trigger Repeat Re-trigger Repeat Repeat Re-trigger re-trigger
+This shows the intended behavior: the ﬁrst occurrence opens a notiﬁcation window, repeated
+occurrences inside the window are suppressed, and a later occurrence after the window can notify
+again.
+#slow-control-notiﬁcation channel #slow-control-uncensored
+
+--- PAGE 8 ---
+Last
+update:
+2026/06/25
+16:09xenon:xenonnt:dsg:nt:bi_weekly:20260625 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260625
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/07/25 19:53
+Questions for y'all:
+Any comments on the current behavior and usability?
+Small upgrade: Improve the message format on the “censored” notiﬁcation channel.
+Any other suggestions?
+For the weekend, should we keep the new version running, or revert to the original notiﬁcation
+code?
+DAQ (Andrew)
+At the moment things are fairly stable.
+The high energy veto has had some issues which will likely impact the neutron calibrations. Felix is
+looking at the spare and will hopefully ship within the next ~few weeks. My understanding is this
+timeline is workable. We can likely still take data without it, but the purity may be worse.
+We have cabled up the scintillation cell. With SC the PMT needs to be biasable, and we need to make
+a DAQ conﬁg. Then straxen needs conﬁgured.
+TPC/Electrodes
+see google log  for details of tests since June 16
+Krypton and Radon distillation (Lutz)
+4. Schedule:
+Order of calibrations
+
+--- PAGE 9 ---
+2026/07/25 19:53 9/9 XENONnT commissioning meeting– 2026-06-25
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/
+Two-Step NG Beam-pipe Calibration Proposal  (discussion of Step 1)
+From:
+https://xe1t-wiki.lngs.infn.it/  - XENON1TWiki
+Permanent link:
+https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260625
+Last update: 2026/06/25 16:09
+
+

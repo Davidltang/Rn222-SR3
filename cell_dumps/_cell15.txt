@@ -1,0 +1,8 @@
+---
+## Correction Pipeline
+
+**Correction order** (each step removes a source of position-dependent light collection variation):
+
+1. **Area vs AFT** — fit Rn band centerline with `exp_bump_model`, correct area → `area_aft_corrected`
+2. **AFT vs r²** — fit r²(AFT) with polynomial (Rn-band only), correct r² → `r2_aft_corrected`
+3. **r² vs Area** — band selection + degree-10 polynomial fit in r2_aft_corrected vs area_aft_corrected space, correct area → `area_2_corrected`

@@ -1,0 +1,125 @@
+=== xenonnt_commissioning_meeting_2026-04-30 ===
+Total pages: 5
+
+--- PAGE 1 ---
+2026/06/03 08:11 1/5 XENONnT commissioning meeting– 2026-04-30
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/XENONnT commissioning meeting–
+2026-04-30
+Zoom
+Agenda
+1. News from Operations Manager + Run Coordinator (Petr)
+CRY/Water Cooling Loop:  The new alarms and automatic actions were tested thoroughly and
+all are working as desired. New SC code was thoroughly checked.
+CRY/Accumulator:  The SC code was successfully used to cool down and ﬁll about 150 kg. The
+heat load into the accumulator was measured over a few days and is about 10 W. Today the
+level raised to about 30 cm and LXe puriﬁcation was started on Wed. Apr. 29 noon. Current drift
+time measured by Purity Monitor is ~ 580 µsec.
+PUR:  Still re-circulating Xe gas.
+TPC:  Electrodes HV test is starting on Monday May 4.
+muVeto/nVeto:  Veto PMTs are ON 24/7 since a few weeks, with stable data taking; few tests
+were performed to tune the digitizer threshold in some NV channels, lowering some of them to
+15 ADC counts; preparation for the ﬁrst AmBe calibration (center of NV) completed (calibration
+is scheduled today Thursday Apr. 30 in the afternoon).
+RAD:  Main column cooled down and ﬁlled with ~50 kg of xenon. Currently operating in full
+internal mode. The maintenance of all pumps is ﬁnished. A new charcoal puriﬁer was installed
+to reduce the Rn-level of the puriﬁer. A GXe-only operation mode can be started at any time.
+DST:  System is in standby waiting for the next distillation campaign. System is ready for any
+distillation at any time. The main cold head lifetime comes to an end and cooling power is
+loosing each week. The estimated end of lifetime is more likely to happen during the distillation
+campaign. As an accident, the DST oﬀ-gas bottle LN2 level-meter was damaged. The repair is
+ongoing.
+SC/Upgrade-related:  Accumulator: New code was implemented and is operational. Future
+extensions are foreseen (additional sensors and automatic procedures). Cold water loop: Code
+was implemented and is operational. Level meter splitter: on hold (no new information). Gd
+recovery plant: Interface to SC under discussion. Additional GdWLP sensors: Viewer and SCADA
+screens updates are in progress.
+2. DQM (Caio)
+Github repo: https://github.com/XENONnT/data-quality-management
+Plots saved in: “/project2/lgrandi/dataquality/plots”
+This week's plot:
+
+--- PAGE 2 ---
+Last
+update:
+2026/04/30
+15:57xenon:xenonnt:dsg:nt:bi_weekly:20260430 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260430
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/06/03 08:11
+
+
+--- PAGE 3 ---
+2026/06/03 08:11 3/5 XENONnT commissioning meeting– 2026-04-30
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/3. Activities:
+TPC
+Planned Electrodes Operations1.
+CRY/LXePUR
+MV & NV
+Current NV event rate: 58 Hz
+Livetime percentage for SN monitoring runs over the past week: 90%
+We performed a test to tune the digitizer thresholds of the NV channels. Previously, the majority of
+the PMTs were set to a threshold of 15 ADC, while 16 units out of 120 were conﬁgured at 20 ADC. We
+conducted a test lowering the thresholds to 15 ADC for all but 2 of these 16 units. Based on the
+results, we decided to maintain only 4 PMTs at the 20 ADC level. The following table lists the PMTs for
+which the threshold was lowered during the test, their dark rates at both 20 and 15 ADC, and the
+corresponding percentage increase. Speciﬁcally, PMTs showing a dark rate increase of less than 10%
+have been permanently set to 15 ADC.
+PMT numberDark rate at 20 ADC
+[Hz]Dark rate at 15 ADC
+[Hz]Percentage increase of the dark
+rate [%]
+27 836 876 4.8
+45 787 1170 48.7
+54 1051 1108 5.4
+55 492 877 78.3
+57 886 936 5.5
+
+--- PAGE 4 ---
+Last
+update:
+2026/04/30
+15:57xenon:xenonnt:dsg:nt:bi_weekly:20260430 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260430
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/06/03 08:11PMT numberDark rate at 20 ADC
+[Hz]Dark rate at 15 ADC
+[Hz]Percentage increase of the dark
+rate [%]
+65 930 1012 8.9
+77 521 538 3.3
+80 576 603 4.7
+100 628 663 5.5
+107 93 263 183.4
+110 824 2310 180.4
+113 587 622 5.9
+114 611 648 6.0
+115 684 710 3.8
+Slow Control
+CRY cold water commissioned. Three cooling modes available: “161”, “162”, and “168”. The
+main cooling mode uses the LNGS cold water system via P161 or P162 (backup to each other). If
+both fail, or if LNGS water is unavailable or too warm, the system can be switched to mode
+“168” using our chiller skid. Automatic procedures are implemented to handle transitions
+between P161 and P162, and to P168. See SCADA screen here. Viewer screen and CRY safety
+screen updates are under construction.
+During commissioning, experts are encouraged to disable alarms where appropriate.
+Non-expert collaboration members who are curious to follow alarms are encouraged to use the
+Slack channel for notiﬁcations and unregister from email/SMS alarm lists.
+DAQ (Andrew)
+Sorry I cannot join the meeting today, but here is a status update from me.
+The investigation into the crashes at higher data rates continues
+We have been speaking with CAEN for the past few weeks, they think there is an issue
+somewhere in the system but still traking this down. In parallel we have been testing multiple
+
+--- PAGE 5 ---
+2026/06/03 08:11 5/5 XENONnT commissioning meeting– 2026-04-30
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/conﬁguration options.
+Felix (Freiburg) is working on a minimal working example so we can debug things faster.
+Important point: we are not sure what the scaling with data rate is and so hard to predict what
+the impact will be. Could be no issue at all! The system has been quite stable in S1-only data
+taking modes as well as with the vetoes.
+Please reach out if you want more details!
+Krypton and Radon distillation (Lutz)
+General (Abby & Masatoshi)
+Schedule Building
+Moving to a special schedule wiki page
+From:
+https://xe1t-wiki.lngs.infn.it/  - XENON1TWiki
+Permanent link:
+https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:nt:bi_weekly:20260430
+Last update: 2026/04/30 15:57

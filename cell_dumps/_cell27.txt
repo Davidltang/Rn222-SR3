@@ -1,0 +1,6 @@
+---
+## AFT + FV Fiducial Cuts (Post-Correction)
+
+Now apply fiducial cuts that were deferred to after corrections:
+1. **AFT cut** [0.12, 0.55] — BiPo + gas band rejection
+2. **FV cut** in corrected r² vs AFT space: AFT [0.17, 0.43], r² [0, 40]

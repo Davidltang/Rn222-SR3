@@ -1,0 +1,27 @@
+# ── Rn-band re-selection for Correction 2 ──
+# Use a VERTICAL band in area_aft_corrected (different from Correction 1).
+CORR2_AREA_LO = 40000
+CORR2_AREA_HI = 45000
+
+mask_corr2_rn = (
+    (d_cor['area_aft_corrected'] >= CORR2_AREA_LO) &
+    (d_cor['area_aft_corrected'] <= CORR2_AREA_HI)
+)
+print(f'Correction 2 Rn-band: area_aft_corrected ∈ [{CORR2_AREA_LO}, {CORR2_AREA_HI}] PE')
+print(f'Events in Correction 2 Rn-band: {mask_corr2_rn.sum():,}')
+
+# Quick visual check: where is this band?
+fig, ax = plt.subplots(figsize=(8, 5))
+h = ax.hist2d(d_cor['area_aft_corrected'], d_cor['area_fraction_top'],
+              bins=[300, 200], range=[[20e3, 100e3], [0.1, 0.6]],
+              cmin=1, norm=matplotlib.colors.LogNorm(), cmap='viridis')
+plt.colorbar(h[3], ax=ax, label='Counts')
+ax.axvline(x=CORR2_AREA_LO, color='red', ls='--', lw=2, label=f'[{CORR2_AREA_LO}, {CORR2_AREA_HI}] PE')
+ax.axvline(x=CORR2_AREA_HI, color='red', ls='--', lw=2)
+ax.set_xlabel('AFT-Corrected Area [PE]', fontsize=12)
+ax.set_ylabel('Area Fraction Top', fontsize=12)
+ax.set_title('Correction 2 Rn-Band Selection', fontsize=13)
+ax.legend(fontsize=10)
+ax.grid(True, alpha=0.2)
+safe_tight(fig)
+plt.show()

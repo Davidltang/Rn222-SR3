@@ -1,0 +1,155 @@
+--- Page 1 ---
+2026/05/19 20:44 1/7 S1only Alpha Analysis
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/S1only Alpha Analysis
+Ting, ytlin@mpi-hd.mpg.de
+20230828, created
+Environment
+Environment TAG XENONnT_2023.07.1
+ module version
+path                     git
+ python  3.8.16
+/opt/XENONnT/anaconda/envs/XENONnT_2023.05.2/bin/python3
+None
+  strax   1.4.2
+/opt/XENONnT/anaconda/envs/XENONnT_2023.05.2/lib/python3.8/site-
+packages/strax                    None
+straxen   2.0.6
+/opt/XENONnT/anaconda/envs/XENONnT_2023.05.2/lib/python3.8/site-
+packages/straxen                    None
+  cutax  1.14.1
+/project2/lgrandi/ytlin/cutax/cutax branch:master | bd3c820
+ xedocs  0.2.16
+/project2/lgrandi/ytlin/xedocs/xedocs branch:master | ccf3ac4
+ rframe   0.2.9
+/opt/XENONnT/anaconda/envs/XENONnT_2023.05.2/lib/python3.8/site-
+packages/rframe                    None
+Data
+st = cutax.xenonnt_online(_rucio_local_path='/project/lgrandi/rucio',
+include_rucio_local=True)
+st.storage.append(strax.DataDirectory('/project2/lgrandi/xenonnt/processed/'
+, readonly=True))
+st.storage.append(strax.DataDirectory('/project/lgrandi/xenonnt/processed/',
+readonly=True))
+run_mode = ["background_linked"],
+exclude_tags = ['*flash*', '*messy*', '*ramp*', 'abandon', 'bad',
+'pmt_trip']
+targets = ["peak_basics", "peaks"]
+Link to the Code
+The main code follows radon_analysis_v2_s1only.py  from github branch . The corresponding
+--- Page 2 ---
+Last update: 2024/06/25 14:56 xenon:xenonnt:lin:sr1:230828 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:lin:sr1:230828
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/05/19 20:44conﬁguration ﬁles for cuts and corrections are:
+conﬁguration_ﬁles/radon_analysis_conﬁg_v2_s1s2_sr1_oﬄineV14.json and
+conﬁguration_ﬁles/radon_analysis_conﬁg_v2_s1s2_oﬄine_sr1.py
+Note the while the plots on this wiki-page is provided by this environment and conﬁguration ﬁles, the
+method should work in general.
+Overview
+The Pb214 beta-emitter is one of the main background contributor in the lowER region. A good
+estimation on the Pb214 rate is therefore important for every study within this region of interest (see
+the notes in the reference). As Pb214 is one of the decay daughter from the Rn222 decay chain,
+which also include several mono-energetic alpha-emitters in the high energy region. Since these beta-
+emitters and alpha-emitters originate from the same chain, these decays are physically one-to-one
+corresponding to each other minus, for instance, the plate-out contribution. For this reason, it is
+possible to use the alpha rate information to set constraints on the Pb214 rate.
+The goal of this analysis is to try to evaluate the alpha rate using S1only data, which should include
+BiPo rates as well.
+Fig.0: Rn222 and Rn220 decay chain with beta energies.
+--- Page 3 ---
+2026/05/19 20:44 3/7 S1only Alpha Analysis
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/
+Fig.0.1: Reference for a rough location of each peaks.
+Area and R2 Correction
+Cuts
+The cuts used for area and r2 corrections are listed as follows:
+type == 1 , the type is chosen to be 1 to select the S1 events.
+area > 2.0E4
+(0.15 < area_fraction_top) & (area_fraction_top < 0.46)
+Fig.1: data after cuts
+Correcting area using AFT (pre-r2)
+Fitting the area vs AFT using the following function:
+.
+This is an empirical function that Florian found to ﬁt the curve well as show in his note.
+--- Page 4 ---
+Last update: 2024/06/25 14:56 xenon:xenonnt:lin:sr1:230828 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:lin:sr1:230828
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/05/19 20:44Notice that this particular area correct will NOT propagate deeper into the analysis; the purpose of
+this correct is to allow selection of Pb214 events for the r2 correction.
+Fig.2a: orange curve shows the area vs AFT ﬁt for area correction Fig.2b: data after the area correction
+Correcting r2 using AFT
+Applying the corrected area cut to select the Po210 events. Because of the plate-out eﬀect the Po210
+events should be mostly on the walls, and we can use them to correct the r2_naive  that uses
+weighted PMT area (will use Matteo's s1only position reconstruction once available as shown in this
+note). The curve is ﬁtted using a 6th order polynomial with the odd power components's initial values
+set to 0. Figure.3a shows the initial curve as the dashed orange curve and ﬁtted curve as the solid
+orange curve.
+Fig.3a: orange curve shows the r2 vs AFT ﬁt for r2 correction Fig.3b: data after the r2 correction
+Correcting area correction using r2
+Fitting the area vs corrected r2 using a linear curve, and correct the area as such. Notice the area
+here is the uncorrected area.
+Fig.4a: orange curve shows the area vs r2 ﬁt for area correction Fig.4b: data after the area correction
+--- Page 5 ---
+2026/05/19 20:44 5/7 S1only Alpha Analysis
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/Correcting area using AFT (post-r2)
+The ﬁt function is exactly the same as done for pre-r2. However, a ﬁducial volume selection using r2
+is applied. And the input area has already been corrected via r2. With these changes, the selection for
+the curve can be more stringent; the Rn222 alpha population is selected.
+Fig.5a: orange curve shows the area vs AFT ﬁt for area correction Fig.5b: data after the area correction
+Fiducial Volume Estimation and Event Selection Systematics
+ﬁducial volume
+The ﬁducial volume estimation from s1only analysis essentially follow Dominick's note. The main idea
+is to simply compare s1only events count to that of s1s2. The ﬁrst step is to match s1only event one-
+to-one to that of s1s2; any events without s2 are ignored. Also because s1s2 doesn't quite handle
+BiPo events well, those events are also cut out via s1only corrected area. The next step is deﬁning a
+reference volume using s1s2 as shown in Fig.6a, whose volume should be known with an known
+uncertainty. Then if we make a s1only ﬁducial volume cut, by comparing the count ratio:
+(reference-volume)*(counts in reference-volume and s1only-FV)/(counts in
+reference-volume),
+should give us the estimated s1only FV with the uncertainty determined by Clopper-Pearson intervals
+of a binary distribution (taking the larger side of the interval as the uncertainty).
+Fig.6a: s1s2 reference volume Fig.6b: s1only ﬁducial volume via AFT and corrected r2
+event selection
+With s1only selection, there will always be some events lying outside the reference volumes as shown
+in Fig.7a. The following ratio is then stored to as an acceptance with binomial error as well:
+--- Page 6 ---
+Last update: 2024/06/25 14:56 xenon:xenonnt:lin:sr1:230828 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:lin:sr1:230828
+https://xe1t-wiki.lngs.infn.it/ Printed on 2026/05/19 20:44(counts in reference volume and s1only-FV)/(counts in s1only-FV)
+Similarly, s1only selection also lacks other s1s2-cuts-without-FV as shown in note. The events outside
+the s1s2 cuts are shown in Fig.7b, and the following ratio is also stored to as an acceptance with
+binomial error as well:
+(counts in s1s2-cut-without-FV and s1only-FV)/(counts in s1only-FV)
+Fig.7a: s1only-FV events outside reference volume Fig.7b: s1only-FV events outside s1s2 quality cuts
+update
+The ratio is combined to the following instead to avoid double counting excluded events,
+ (counts in reference volume, s1s2-cut-without-FV, and s1only-FV)/(counts in
+s1only-FV)
+Alpha Event Rate
+error included
+Since the rate formula is as simple as
+R = count/(time*xenon_density*fiducial_volume)
+The associated error contribution are
+error propagation from the multi-peak ﬁt that selected the count range
+Poisson for the count
+Xe density of  using 0.1 mbar variation according to dashboard  and
+density reference at gas/liquid transition point according to NIST
+r positional error of 2cm for the reference volume (see Fig.3 from note)
+z positional error of 1.5 for the reference volume (see Fig.5 from note)
+the binomial error from s1only ﬁducial volume selection
+the binomial error from comparing to s1s2 cut (which should have no acceptance lost) as
+discussed in the “event selection” section
+Notice, the deadtime  has been subtracted out from livetime  using the deadtime plugin. However,
+no error is assigned to them.
+--- Page 7 ---
+2026/05/19 20:44 7/7 S1only Alpha Analysis
+XENON1TWiki - https://xe1t-wiki.lngs.infn.it/alpha rate evolution
+The rest follow the multi-peak ﬁt strategy as shown in note, and the alpha rate of the background
+peak level data available at the time is shown in Fig.8.
+Fig.8a: s1only events with FV cut Fig.8b: s1only radon rate evolution with relative light yield
+Reference
+Note Author(s) Date
+XENONnT SR0 radon analysis - signal corrections Dominick Mar 30th, 2022
+Using S1-Only Data-Trained CNN for 3D Position Reconstruction Matteo Nov 30th, 2021
+Closer look into alpha rate evolution in XEnT Florian Dec 17th, 2020
+From:
+https://xe1t-wiki.lngs.infn.it/  - XENON1TWiki
+Permanent link:
+https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:lin:sr1:230828
+Last update: 2024/06/25 14:56
